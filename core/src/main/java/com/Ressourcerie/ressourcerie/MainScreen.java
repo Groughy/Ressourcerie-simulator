@@ -21,6 +21,9 @@ public class MainScreen implements Screen {
     private int money = 100;
     private int day = 1;
     private Random random = new Random();
+    private int energy = 100;
+    private int maxEnergy = 100;
+    private String message = "";
 
     @Override
     public void show() {
@@ -29,9 +32,9 @@ public class MainScreen implements Screen {
         font = new BitmapFont();
         Inventory = new ArrayList<>();
 
-        Inventory.add(new Item("Vieille radio", 45, 20, "Commun"));
-        Inventory.add(new Item("Chaise en bois", 70, 15, "Commun"));
-        Inventory.add(new Item("Vieux vélo", 30, 50, "Commun"));
+        Inventory.add(new Item("Vieille radio", 45, 20, "Commun", 10));
+        Inventory.add(new Item("Chaise en bois", 70, 15, "Commun", 5));
+        Inventory.add(new Item("Vieux vélo", 30, 50, "Commun", 15));
     }
 
     @Override
@@ -57,8 +60,20 @@ public class MainScreen implements Screen {
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.R)) {
 
-            Inventory.get(selectedIndex).repair();
+    if (!Inventory.isEmpty()) {
+
+        Item selectedItem = Inventory.get(selectedIndex);
+
+        if (energy >= selectedItem.energyCost) {
+            energy -= selectedItem.energyCost;
+            selectedItem.repair();
+            message = "Objet repare !";
+        } else {
+            message = "Pas assez d'energie pour reparer cet objet.";
+            System.out.println(message);
         }
+    }
+}
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.V)) {
 
@@ -89,6 +104,9 @@ public class MainScreen implements Screen {
         batch.begin();
         font.draw(batch, "Argent : " + money + "€", 500, 450);
         font.draw(batch, "Jour : " + day, 500, 400);
+        font.draw(batch, " R = Réparer | V = Vendre | Haut/Bas = Sélection ", 100, 450);
+        font.draw(batch, "Énergie : " + energy + "/" + maxEnergy, 500, 350);
+        font.draw(batch, message, 100, 380);
         int y = 300;
 
         for (int i = 0; i < Inventory.size(); i++) {
@@ -100,7 +118,14 @@ public class MainScreen implements Screen {
                 prefix = "> ";
             }
 
-            font.draw(batch, prefix + item.name + " - Etat : " + item.condition + "%" + " - Rareté : " + item.rarety, 100, y);
+            font.draw(batch,
+                prefix + item.name
+                + " - Etat : " + item.condition + "%"
+                + " - Rarete : " + item.rarety
+                + " - Energie : " + item.energyCost,
+                100,
+                y
+            );
 
             y -= 40;
 
@@ -115,6 +140,7 @@ public class MainScreen implements Screen {
     private void nextDay() {
 
         day++;
+        energy = maxEnergy;
 
         int numberOfNewItems = random.nextInt(3) + 2;
         for (int i = 0; i < numberOfNewItems; i++) {
@@ -144,7 +170,8 @@ public class MainScreen implements Screen {
             rarity = "Légendaire";
         }
 
-        return new Item(name, conditions, values, rarity);
+        int energyCost = random.nextInt(21) + 5; // 
+        return new Item(name, conditions, values, rarity, energyCost);
     }
 
     @Override
