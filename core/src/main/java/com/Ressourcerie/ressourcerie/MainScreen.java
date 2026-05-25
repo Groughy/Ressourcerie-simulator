@@ -41,6 +41,9 @@ public class MainScreen implements Screen {
     private int coffeeEnergyBoost = 20;
     private int coffeeCost = 10;
     private int repairBonus = 0;
+    private int workshopLevel = 1;
+    private int workshopUpgradeCost = 100;
+
 
     @Override
     public void show() {
@@ -181,6 +184,18 @@ public class MainScreen implements Screen {
             }
         }
 
+        if (Gdx.input.isKeyJustPressed(Input.Keys.U)){
+            if (money >= workshopUpgradeCost) {
+                money -= workshopUpgradeCost;
+                workshopLevel++;
+                repairBonus += 2;
+                workshopUpgradeCost += 100;
+                message = "Vous avez amélioré votre atelier à niveau " + workshopLevel + ". Bonus de réparation augmenté de 5.";
+            } else {
+                message = "Pas assez d'argent pour améliorer l'atelier.";
+            }
+        }
+
         if (Inventory.isEmpty()) {
             if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
                 dayReport = true;
@@ -202,6 +217,8 @@ public class MainScreen implements Screen {
         font.draw(batch, "Clients mécontents : " + unhappyCustomers, 500, 260);
         font.draw(batch, "Clients neutres : " + neutralCustomers, 500, 230);
         font.draw(batch, "Bonus de réparation : " + repairBonus, 500, 200);
+        font.draw(batch, "Atelier niveau : " + workshopLevel, 500, 170);
+        font.draw(batch, "Ameliorer atelier : " + workshopUpgradeCost + "€", 100, 60);
         int y = 300;
 
         int sellingY = 260;
