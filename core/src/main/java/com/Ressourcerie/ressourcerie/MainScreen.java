@@ -43,6 +43,12 @@ public class MainScreen implements Screen {
     private int repairBonus = 0;
     private int workshopLevel = 1;
     private int workshopUpgradeCost = 100;
+    private int electronicWorkshopLevel = 1;
+    private int woodWorkshopLevel = 1;
+    private int mechanicalWorkshopLevel = 1;
+    private int decorationWorkshopLevel = 1;
+    private int textileWorkShopLevel = 1;
+
 
 
     @Override
@@ -85,6 +91,10 @@ public class MainScreen implements Screen {
             if (!Inventory.isEmpty()) {
 
                 Item selectedItem = Inventory.get(selectedIndex);
+                if (!canRepair(selectedItem)){
+                    message = "Améliore ton atelier pour faire ça. Atelier requis : " + selectedItem.type;
+                    return;
+                }
 
                 int repairCost = selectedItem.energyCost - repairBonus;
                 if (repairCost < 1) {
@@ -373,6 +383,22 @@ public class MainScreen implements Screen {
                 return "Décoration";
             }
         return "Divers";
+    }
+
+    private boolean canRepair (Item item){
+        if (item.type.equals("Electronique")){
+            return electronicworkshopLevel > 1;
+        }
+        if (item.type.equals("Mécanique")){
+            return mechanicWorkshopLevel > 1;
+        }
+        if (item.type.equals("Meuble")){
+            return woodWorkshopLevel > 1;
+        }
+        if (item.type.equals("Décoration")) || item.type.equals("Divers"){
+            return decorationWorkshopLevel > 1;
+        }
+        return false;
     }
 
     @Override
