@@ -387,16 +387,16 @@ public class MainScreen implements Screen {
 
     private boolean canRepair (Item item){
         if (item.type.equals("Electronique")){
-            return electronicworkshopLevel > 1;
+            return electronicWorkshopLevel > 0;
         }
         if (item.type.equals("Mécanique")){
-            return mechanicWorkshopLevel > 1;
+            return mechanicalWorkshopLevel > 0;
         }
         if (item.type.equals("Meuble")){
-            return woodWorkshopLevel > 1;
+            return woodWorkshopLevel > 0;
         }
-        if (item.type.equals("Décoration")) || item.type.equals("Divers"){
-            return decorationWorkshopLevel > 1;
+        if (item.type.equals("Décoration") || item.type.equals("Divers")){
+            return decorationWorkshopLevel > 0;
         }
         return false;
     }
