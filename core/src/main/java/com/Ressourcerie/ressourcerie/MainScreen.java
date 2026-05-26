@@ -54,9 +54,9 @@ public class MainScreen implements Screen {
         sellingStock = new ArrayList<>();
         currentCustomer = createRandomCustomer();
 
-        Inventory.add(new Item("Vieille radio", 45, 20, "Commun", 10));
-        Inventory.add(new Item("Chaise en bois", 70, 15, "Commun", 5));
-        Inventory.add(new Item("Vieux vélo", 30, 50, "Commun", 15));
+        Inventory.add(new Item("Vieille radio", 45, 20, "Commun", 10, "Electronique"));
+        Inventory.add(new Item("Chaise en bois", 70, 15, "Commun", 5, "Mobilier"));
+        Inventory.add(new Item("Vieux vélo", 30, 50, "Commun", 15, "Mécanique"));
     }
 
     @Override
@@ -241,7 +241,8 @@ public class MainScreen implements Screen {
                     prefix + item.name
                             + " - Etat : " + item.condition + "%"
                             + " - Rarete : " + item.rarety
-                            + " - Energie : " + item.energyCost,
+                            + " - Energie : " + item.energyCost
+                            + " - Type : " + item.type,
                     100,
                     y);
 
@@ -287,6 +288,7 @@ public class MainScreen implements Screen {
                 "Ordinateur obsolète", "Télévision ancienne", "Machine à écrire", "Guitare désaccordée", "Canapé usé",
                 "Vase ébréché", "Montre cassée", "Appareil photo vintage", "Jouet en bois", "Livre ancien" };
         String name = names[random.nextInt(names.length)];
+        String type = getTypeFromName(name);
         int conditions = random.nextInt(81) + 20;
         int values = random.nextInt(41) + 10;
         String rarity;
@@ -302,7 +304,7 @@ public class MainScreen implements Screen {
         }
 
         int energyCost = random.nextInt(21) + 5; //
-        return new Item(name, conditions, values, rarity, energyCost);
+        return new Item(name, conditions, values, rarity, energyCost, type);
     }
 
     private Customer createRandomCustomer() {
@@ -345,6 +347,32 @@ public class MainScreen implements Screen {
             }
         }
         message = currentCustomer.name + " n'a pas acheté d'objet aujourd'hui.";
+    }
+
+    private String getTypeFromName (String name){
+        if (name.equals("Vieille radio")
+            || name.equals("Lampe cassée")
+            || name.equals("Ordinateur obsolète")
+            || name.equals("Télévision ancienne")
+            || name.equals("Appareil photo vintage")){
+                return "Electronique";
+            }
+        if (name.equals("Chaise en bois")
+            || name.equals ("Table abîmée")
+            || name.equals ("Canapé usé")
+        ){
+            return "Meuble";
+        }
+        if (name.equals("Vieux vélo")){
+            return "Mécanique";
+        }
+        if (name.equals("Machine à écrire")
+            || name.equals("Jouet en bois")
+            || name.equals("Livre ancien")
+            || name.equals("Vase ébréché")){
+                return "Décoration";
+            }
+        return "Divers";
     }
 
     @Override
