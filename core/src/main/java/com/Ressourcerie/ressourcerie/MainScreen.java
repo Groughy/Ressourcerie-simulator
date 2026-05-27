@@ -106,7 +106,7 @@ public class MainScreen implements Screen {
                 if (energy >= repairCost) {
                     energy -= repairCost;
                     int repairAmount = getRepairAmount(selectedItem);
-                    selectedItem.repair(repairAmount)
+                    selectedItem.repair(repairAmount);
                 } else {
                     message = "Pas assez d'énergie pour réparer cet objet.";
                 }
@@ -488,7 +488,7 @@ public class MainScreen implements Screen {
     }
 
     private int getRepairAmount(Item item){
-        int workshopLevel = getWorkshoplevelForItem(item);
+        int workshopLevel = getWorkshopLevelForItem(item);
         return 5 + (workshopLevel * 5);
     }
 
