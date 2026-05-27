@@ -32,6 +32,7 @@ public class MainScreen implements Screen {
     private int unhappyCustomers = 0;
     private int neutralCustomers = 0;
     private boolean dayReport = false;
+    private boolean showWorkshopMenu = false;
     private int dailyMoneyEarned = 0;
     private int dailyItemsSold = 0;
     private int dailyReputationChange = 0;
@@ -43,11 +44,14 @@ public class MainScreen implements Screen {
     private int repairBonus = 0;
     private int workshopLevel = 1;
     private int workshopUpgradeCost = 100;
-    private int electronicWorkshopLevel = 1;
-    private int woodWorkshopLevel = 1;
+    private int electronicWorkshopLevel = 0;
+    private int electronicWorkshopCost = 150;
+    private int woodWorkshopLevel = 0;
+    private int woodWorkshopCost = 120;
     private int mechanicalWorkshopLevel = 1;
     private int decorationWorkshopLevel = 1;
-    private int textileWorkShopLevel = 1;
+    private int textileWorkShopLevel = 0;
+    private int textileWorkShopCost = 150;
 
 
 
@@ -116,6 +120,43 @@ public class MainScreen implements Screen {
                 nextDay();
                 return;
             }
+        }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.A)){
+            showWorkshopMenu = !showWorkshopMenu;
+        }
+
+        if (showWorkshopMenu){
+
+            if (Gdx.input.isKeyJustPressed(Input.keys.NUM_1)){
+                upgradeElectronicWorshop();
+            }
+            if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)){
+                upgradeMechanicalWorkshop();
+            }
+            if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)){
+                upgradeWoodWorkshop();
+            }
+            if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_4)){
+                upgradeDecorationWorkshop();
+            }
+            if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_5)){
+                upgradeTextileWorkshop();
+            }
+
+            batch.begin();
+
+            font.draw(batch, "=== ATELIERS ===", 100, 420);
+            font.draw(batch, "1, - Electronique niv. " + electronicWorshopLevel, 100, 370);
+            font.draw(batch, "2, - Mécanique niv. " + mechanicalWorkshopLevel, 100, 340);
+            font.draw(batch, "3, - Mobilier niv. " + woodWorkshopLevel, 100, 310);
+            font.draw(batch, "4, - Décoration niv. " + decorationWorkshopLevel, 100, 280);
+            font.draw(batch, "5, - Textile niv. " + textileWorkShopLevel, 100, 250);
+            font.draw(batch, "Appuyez sur le numéro de l'atelier pour l'améliorer.", 100, 220);
+            font.draw(batch, "Appuyez sur A pour fermer ce menu.", 100, 190);
+
+            batch.end();
+            return;
         }
 
         if (dayReport) {
@@ -211,6 +252,22 @@ public class MainScreen implements Screen {
                 dayReport = true;
             }
         }
+
+        if (Gdx.input.isKeyJustPressed(Input.keys.M)){
+            if (mechanicWorkshopLevel == 0){
+                if(money >= mechanicWorkshopCost){
+                    money-= mechanicWorkshopCost;
+                    mechanicWorkshopLevel = 1;
+
+                    message = "Atelier de mécanique débloqué !";
+                }
+                else{
+                    message "Pas assez d'argent pour l'atelier de mécanique.";
+                }
+            }
+        }
+
+        if (Gdx.input.isKeyJustPressed(Input.keys.))
 
         batch.begin();
         font.draw(batch, "Argent : " + money + "€", 500, 450);
@@ -387,16 +444,16 @@ public class MainScreen implements Screen {
 
     private boolean canRepair (Item item){
         if (item.type.equals("Electronique")){
-            return electronicWorkshopLevel > 0;
+            return electronicWorkshopLevel > 1;
         }
         if (item.type.equals("Mécanique")){
-            return mechanicalWorkshopLevel > 0;
+            return mechanicalWorkshopLevel > 1;
         }
         if (item.type.equals("Meuble")){
-            return woodWorkshopLevel > 0;
+            return woodWorkshopLevel > 1;
         }
         if (item.type.equals("Décoration") || item.type.equals("Divers")){
-            return decorationWorkshopLevel > 0;
+            return decorationWorkshopLevel > 1;
         }
         return false;
     }
