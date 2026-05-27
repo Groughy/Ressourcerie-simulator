@@ -17,8 +17,8 @@ public class Item {
         this.energyCost = energyCost;
         this.type = type;
     }
-    public void repair() {
-        condition += 10;
+    public void repair(int amount) {
+        condition += amount;
 
         if(condition > 100) {
             condition = 100;
