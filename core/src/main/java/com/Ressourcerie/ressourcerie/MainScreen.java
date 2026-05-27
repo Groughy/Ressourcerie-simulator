@@ -102,10 +102,7 @@ public class MainScreen implements Screen {
                     return;
                 }
 
-                int repairCost = selectedItem.energyCost - repairBonus;
-                if (repairCost < 1) {
-                    repairCost = 1;
-                }
+                int repairCost = getFinalRepairCost(selectedItem);
                 if (energy >= repairCost) {
                     energy -= repairCost;
                     selectedItem.repair();
@@ -294,7 +291,7 @@ public class MainScreen implements Screen {
                     prefix + item.name
                             + " - Etat : " + item.condition + "%"
                             + " - Rarete : " + item.rarety
-                            + " - Energie : " + item.energyCost
+                            + " - Energie : " + getFinalRepairCost(item)
                             + " - Type : " + item.type,
                     100,
                     y);
@@ -461,6 +458,32 @@ public class MainScreen implements Screen {
 
         message = workshopName + " amélioré niveau " + currentLevel + " !";
         return currentLevel;
+    }
+
+    private int getWorkshopLevelForItem(Item item){
+        if (item.type.equals("Electronique")){
+            return electronicWorkshopLevel;
+        }
+        if (item.type.equals("Mécanique")){
+            return mechanicalWorkshopLevel;
+        }
+        if (item.type.equals("Meuble")){
+            return woodWorkshopLevel;
+        }
+        if (item.type.equals("Décoration") || item.type.equals("Divers")){
+            return decorationWorkshopLevel;
+        }
+        return 0;
+    }
+
+    private int getFinalRepairCost(Item item){
+        int workshopLevel = getWorkshopLevelForItem(item);
+        int workshopBonus = workshopLevel - 1;
+        int finalCost = item.energyCost - repairBonus - workshopBonus;
+        if (finalCost < 1){
+            finalCost = 1;
+        }
+        return finalCost;
     }
 
     @Override
