@@ -449,7 +449,7 @@ public class MainScreen implements Screen {
     }
 
     private int upgradeWorkshop (int currentLevel, String workshopName){
-        int cost = getWorshopUpgradeCost(currentLevel);
+        int cost = getWorkshopUpgradeCost(currentLevel);
 
         if (money < cost) {
             message = "Pas assez d'argent pour améliorer " + workshopName + ".";
@@ -459,7 +459,7 @@ public class MainScreen implements Screen {
         money -= cost;
         currentLevel++;
 
-        message = workshopName + " amélioré niveau " + currentlevel + " !";
+        message = workshopName + " amélioré niveau " + currentLevel + " !";
         return currentLevel;
     }
 
