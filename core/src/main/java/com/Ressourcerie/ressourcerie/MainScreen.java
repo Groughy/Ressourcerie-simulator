@@ -90,6 +90,14 @@ public class MainScreen implements Screen {
             }
         }
 
+        if (Gdx.input.isKeyJustPressed(Input.Keys.PLUS) || Gdx.input.isKeyJustPressed(Input.Keys.EQUALS)){
+            currentSalePrice += 5;
+        }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.MINUS)){
+            currentSalePrice -= 5;
+        }
+
         if (Gdx.input.isKeyJustPressed(Input.Keys.R)) {
 
             if (!Inventory.isEmpty()) {
@@ -209,7 +217,7 @@ public class MainScreen implements Screen {
             if (!Inventory.isEmpty()) {
 
                 Item selectedItem = Inventory.get(selectedIndex);
-
+                selectedItem.salePrice = currentSalePrice;
                 sellingStock.add(selectedItem);
                 Inventory.remove(selectedIndex);
 
