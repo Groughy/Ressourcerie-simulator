@@ -305,7 +305,7 @@ public class MainScreen implements Screen {
         }
 
         font.draw(batch, "Client : " + currentCustomer.name + " | Budget : " + currentCustomer.budget + "€ | Veut : "
-                + currentCustomer.wantedItems, 100, 120);
+                + currentCustomer.wantedItems + " | Type : " + currentCustomer.customerType, 100, 120);
 
         batch.end();
 
@@ -366,13 +366,39 @@ public class MainScreen implements Screen {
         String name = names[random.nextInt(names.length)];
         int budget = random.nextInt(201) + 50;
         String wantedItem = wantedItems[random.nextInt(wantedItems.length)];
-        return new Customer(name, budget, wantedItem);
+        String[] customerTypes = {
+            "Normal",
+            "Collectionneur",
+            "Bricoleur",
+            "Exigeant"
+        };
+        String customerType = customerTypes[random.nextInt(customerTypes.length)];
+        return new Customer(name, budget, wantedItem, customerType);
     }
 
     private void BuyFromCustomer() {
         for (int i = 0; i < sellingStock.size(); i++) {
             Item item = sellingStock.get(i);
             if (item.name.equals(currentCustomer.wantedItems) && (item.value <= currentCustomer.budget)) {
+                if(currentCustomer.customerType.equals("Exigeant")){
+                    if(item.condition < 70){
+                        message = currentCustomer.name + "refuse un objet de mauvaise qualité.";
+                        return;
+                    }
+                }
+                if(currentCustomer.customerType.equals("Collectionneur")){
+                    if(item.rarety.equals("Rare")
+                        || item.rarety.equals("Epique")
+                        || item.rarety.equals("Légendaire")){
+                            money += 20;
+                            message = currentCustomer.name + "paie un bonus pour un objet rare !";
+                    }
+                }
+                if(currentCustomer.customerType.equals("Bricoleur")){
+                    if(item.condition < 40){
+                        reputation += 1;
+                    }
+                }
                 money += item.value;
                 sellingStock.remove(i);
                 message = "Vous avez vendu " + item.name + " à " + currentCustomer.name + " pour " + item.value + "€.";
