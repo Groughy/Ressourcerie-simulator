@@ -33,6 +33,7 @@ public class MainScreen implements Screen {
     private int neutralCustomers = 0;
     private boolean dayReport = false;
     private boolean showWorkshopMenu = false;
+    private boolean showSaleMenu = false;
     private int dailyMoneyEarned = 0;
     private int dailyItemsSold = 0;
     private int dailyReputationChange = 0;
@@ -51,8 +52,6 @@ public class MainScreen implements Screen {
     private int textileWorkshopLevel = 0;
     private int currentSalePrice = 0;
 
-
-
     @Override
     public void show() {
         random = new Random();
@@ -64,7 +63,7 @@ public class MainScreen implements Screen {
 
         Inventory.add(new Item("Vieille radio", 45, 20, 20, "Commun", 10, "Electronique"));
         Inventory.add(new Item("Chaise en bois", 70, 15, 20, "Commun", 5, "Mobilier"));
-        Inventory.add(new Item("Vieux vélo", 30, 50,20 , "Commun", 15, "Mécanique"));
+        Inventory.add(new Item("Vieux vélo", 30, 50, 20, "Commun", 15, "Mécanique"));
     }
 
     @Override
@@ -90,11 +89,11 @@ public class MainScreen implements Screen {
             }
         }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.PLUS) || Gdx.input.isKeyJustPressed(Input.Keys.EQUALS)){
+        if (Gdx.input.isKeyJustPressed(Input.Keys.PLUS) || Gdx.input.isKeyJustPressed(Input.Keys.EQUALS)) {
             currentSalePrice += 5;
         }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.MINUS)){
+        if (Gdx.input.isKeyJustPressed(Input.Keys.MINUS)) {
             currentSalePrice -= 5;
         }
 
@@ -103,7 +102,7 @@ public class MainScreen implements Screen {
             if (!Inventory.isEmpty()) {
 
                 Item selectedItem = Inventory.get(selectedIndex);
-                if (!canRepair(selectedItem)){
+                if (!canRepair(selectedItem)) {
                     message = "Améliore ton atelier pour faire ça. Atelier requis : " + selectedItem.type;
                     return;
                 }
@@ -128,25 +127,25 @@ public class MainScreen implements Screen {
             }
         }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.A)){
+        if (Gdx.input.isKeyJustPressed(Input.Keys.A)) {
             showWorkshopMenu = !showWorkshopMenu;
         }
 
-        if (showWorkshopMenu){
+        if (showWorkshopMenu) {
 
-            if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)){
+            if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)) {
                 electronicWorkshopLevel = upgradeWorkshop(electronicWorkshopLevel, "Atelier electronique");
             }
-            if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)){
+            if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)) {
                 mechanicalWorkshopLevel = upgradeWorkshop(mechanicalWorkshopLevel, "Atelier mecanique");
             }
-            if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)){
+            if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)) {
                 woodWorkshopLevel = upgradeWorkshop(woodWorkshopLevel, "Atelier mobilier");
             }
-            if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_4)){
+            if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_4)) {
                 decorationWorkshopLevel = upgradeWorkshop(decorationWorkshopLevel, "Atelier decoration");
             }
-            if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_5)){
+            if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_5)) {
                 textileWorkshopLevel = upgradeWorkshop(textileWorkshopLevel, "Atelier Textile");
             }
 
@@ -215,7 +214,8 @@ public class MainScreen implements Screen {
         if (Gdx.input.isKeyJustPressed(Input.Keys.V)) {
 
             if (!Inventory.isEmpty()) {
-
+                currentSalePrice = Inventory.get(selectedIndex).value;
+                showSaleMenu = true;
                 Item selectedItem = Inventory.get(selectedIndex);
                 selectedItem.salePrice = currentSalePrice;
                 sellingStock.add(selectedItem);
@@ -231,6 +231,59 @@ public class MainScreen implements Screen {
             }
         }
 
+        if (showSaleMenu) {
+            if (Gdx.input.isKeyJustPressed(Input.Keys.PLUS)
+                    || Gdx.input.isKeyJustPressed(Input.Keys.EQUALS)) {
+                currentSalePrice += 5;
+            }
+
+            if (Gdx.input.isKeyJustPressed(Input.Keys.MINUS)) {
+                currentSalePrice -= 5;
+
+                if (currentSalePrice < 1) {
+                    currentSalePrice = 1;
+                }
+            }
+
+            if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+                Item selectedItem = Inventory.get(selectedIndex);
+                selectedItem.salePrice = currentSalePrice;
+
+                sellingStock.add(selectedItem);
+                Inventory.remove(selectedIndex);
+
+                if (selectedIndex >= Inventory.size()) {
+                    selectedIndex = Inventory.size() - 1;
+                }
+
+                if (selectedIndex < 0) {
+                    selectedIndex = 0;
+                }
+
+                showSaleMenu = false;
+                message = "Objet mis en vente.";
+            }
+
+            if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+                showSaleMenu = false;
+            }
+
+            batch.begin();
+
+            Item selectedItem = Inventory.get(selectedIndex);
+
+            font.draw(batch, "=== MISE EN VENTE ===", 100, 420);
+            font.draw(batch, selectedItem.name, 100, 380);
+            font.draw(batch, "Valeur conseillee : " + selectedItem.value + " euros", 100, 340);
+            font.draw(batch, "Prix choisi : " + currentSalePrice + " euros", 100, 300);
+            font.draw(batch, "+ / - = modifier le prix", 100, 250);
+            font.draw(batch, "ENTREE = confirmer", 100, 220);
+            font.draw(batch, "ECHAP = annuler", 100, 190);
+
+            batch.end();
+            return;
+        }
+
         if (Gdx.input.isKeyJustPressed(Input.Keys.T)) {
             if (money >= 40) {
                 money -= 40;
@@ -241,13 +294,14 @@ public class MainScreen implements Screen {
             }
         }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.U)){
+        if (Gdx.input.isKeyJustPressed(Input.Keys.U)) {
             if (money >= workshopUpgradeCost) {
                 money -= workshopUpgradeCost;
                 workshopLevel++;
                 repairBonus += 2;
                 workshopUpgradeCost += 100;
-                message = "Vous avez amélioré votre atelier à niveau " + workshopLevel + ". Bonus de réparation augmenté de 5.";
+                message = "Vous avez amélioré votre atelier à niveau " + workshopLevel
+                        + ". Bonus de réparation augmenté de 5.";
             } else {
                 message = "Pas assez d'argent pour améliorer l'atelier.";
             }
@@ -374,10 +428,10 @@ public class MainScreen implements Screen {
         int budget = random.nextInt(201) + 50;
         String wantedItem = wantedItems[random.nextInt(wantedItems.length)];
         String[] customerTypes = {
-            "Normal",
-            "Collectionneur",
-            "Bricoleur",
-            "Exigeant"
+                "Normal",
+                "Collectionneur",
+                "Bricoleur",
+                "Exigeant"
         };
         String customerType = customerTypes[random.nextInt(customerTypes.length)];
         return new Customer(name, budget, wantedItem, customerType);
@@ -387,28 +441,29 @@ public class MainScreen implements Screen {
         for (int i = 0; i < sellingStock.size(); i++) {
             Item item = sellingStock.get(i);
             if (item.name.equals(currentCustomer.wantedItems) && (item.salePrice <= currentCustomer.budget)) {
-                if(currentCustomer.customerType.equals("Exigeant")){
-                    if(item.condition < 70){
+                if (currentCustomer.customerType.equals("Exigeant")) {
+                    if (item.condition < 70) {
                         message = currentCustomer.name + "refuse un objet de mauvaise qualité.";
                         return;
                     }
                 }
-                if(currentCustomer.customerType.equals("Collectionneur")){
-                    if(item.rarety.equals("Rare")
-                        || item.rarety.equals("Epique")
-                        || item.rarety.equals("Légendaire")){
-                            money += 20;
-                            message = currentCustomer.name + "paie un bonus pour un objet rare !";
+                if (currentCustomer.customerType.equals("Collectionneur")) {
+                    if (item.rarety.equals("Rare")
+                            || item.rarety.equals("Epique")
+                            || item.rarety.equals("Légendaire")) {
+                        money += 20;
+                        message = currentCustomer.name + "paie un bonus pour un objet rare !";
                     }
                 }
-                if(currentCustomer.customerType.equals("Bricoleur")){
-                    if(item.condition < 40){
+                if (currentCustomer.customerType.equals("Bricoleur")) {
+                    if (item.condition < 40) {
                         reputation += 1;
                     }
                 }
                 money += item.salePrice;
                 sellingStock.remove(i);
-                message = "Vous avez vendu " + item.name + " à " + currentCustomer.name + " pour " + item.salePrice + "€.";
+                message = "Vous avez vendu " + item.name + " à " + currentCustomer.name + " pour " + item.salePrice
+                        + "€.";
                 if (item.condition >= 70) {
                     reputation += 5;
                     happyCustomers++;
@@ -433,53 +488,52 @@ public class MainScreen implements Screen {
         message = currentCustomer.name + " n'a pas acheté d'objet aujourd'hui.";
     }
 
-    private String getTypeFromName (String name){
+    private String getTypeFromName(String name) {
         if (name.equals("Vieille radio")
-            || name.equals("Lampe cassée")
-            || name.equals("Ordinateur obsolète")
-            || name.equals("Télévision ancienne")
-            || name.equals("Appareil photo vintage")){
-                return "Electronique";
-            }
+                || name.equals("Lampe cassée")
+                || name.equals("Ordinateur obsolète")
+                || name.equals("Télévision ancienne")
+                || name.equals("Appareil photo vintage")) {
+            return "Electronique";
+        }
         if (name.equals("Chaise en bois")
-            || name.equals ("Table abîmée")
-            || name.equals ("Canapé usé")
-        ){
+                || name.equals("Table abîmée")
+                || name.equals("Canapé usé")) {
             return "Meuble";
         }
-        if (name.equals("Vieux vélo")){
+        if (name.equals("Vieux vélo")) {
             return "Mécanique";
         }
         if (name.equals("Machine à écrire")
-            || name.equals("Jouet en bois")
-            || name.equals("Livre ancien")
-            || name.equals("Vase ébréché")){
-                return "Décoration";
-            }
+                || name.equals("Jouet en bois")
+                || name.equals("Livre ancien")
+                || name.equals("Vase ébréché")) {
+            return "Décoration";
+        }
         return "Divers";
     }
 
-    private boolean canRepair (Item item){
-        if (item.type.equals("Electronique")){
+    private boolean canRepair(Item item) {
+        if (item.type.equals("Electronique")) {
             return electronicWorkshopLevel > 1;
         }
-        if (item.type.equals("Mécanique")){
+        if (item.type.equals("Mécanique")) {
             return mechanicalWorkshopLevel > 1;
         }
-        if (item.type.equals("Meuble")){
+        if (item.type.equals("Meuble")) {
             return woodWorkshopLevel > 1;
         }
-        if (item.type.equals("Décoration") || item.type.equals("Divers")){
+        if (item.type.equals("Décoration") || item.type.equals("Divers")) {
             return decorationWorkshopLevel > 1;
         }
         return false;
     }
 
-    private int getWorkshopUpgradeCost(int level){
+    private int getWorkshopUpgradeCost(int level) {
         return 100 * level;
     }
 
-    private int upgradeWorkshop (int currentLevel, String workshopName){
+    private int upgradeWorkshop(int currentLevel, String workshopName) {
         int cost = getWorkshopUpgradeCost(currentLevel);
 
         if (money < cost) {
@@ -494,33 +548,33 @@ public class MainScreen implements Screen {
         return currentLevel;
     }
 
-    private int getWorkshopLevelForItem(Item item){
-        if (item.type.equals("Electronique")){
+    private int getWorkshopLevelForItem(Item item) {
+        if (item.type.equals("Electronique")) {
             return electronicWorkshopLevel;
         }
-        if (item.type.equals("Mécanique")){
+        if (item.type.equals("Mécanique")) {
             return mechanicalWorkshopLevel;
         }
-        if (item.type.equals("Meuble")){
+        if (item.type.equals("Meuble")) {
             return woodWorkshopLevel;
         }
-        if (item.type.equals("Décoration") || item.type.equals("Divers")){
+        if (item.type.equals("Décoration") || item.type.equals("Divers")) {
             return decorationWorkshopLevel;
         }
         return 0;
     }
 
-    private int getFinalRepairCost(Item item){
+    private int getFinalRepairCost(Item item) {
         int workshopLevel = getWorkshopLevelForItem(item);
         int workshopBonus = workshopLevel - 1;
         int finalCost = item.energyCost - repairBonus - workshopBonus;
-        if (finalCost < 1){
+        if (finalCost < 1) {
             finalCost = 1;
         }
         return finalCost;
     }
 
-    private int getRepairAmount(Item item){
+    private int getRepairAmount(Item item) {
         int workshopLevel = getWorkshopLevelForItem(item);
         return 5 + (workshopLevel * 5);
     }
