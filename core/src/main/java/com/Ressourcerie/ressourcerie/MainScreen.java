@@ -45,15 +45,11 @@ public class MainScreen implements Screen {
     private int workshopLevel = 1;
     private int workshopUpgradeCost = 100;
     private int electronicWorkshopLevel = 0;
-    private int electronicWorkshopCost = 150;
     private int woodWorkshopLevel = 0;
-    private int woodWorkshopCost = 120;
     private int mechanicalWorkshopLevel = 1;
-    private int mechanicalWorkshopCost = 150;
     private int decorationWorkshopLevel = 1;
-    private int decorationWorkshopCost = 120;
     private int textileWorkshopLevel = 0;
-    private int textileWorkshopCost = 150;
+    private int currentSalePrice = 0;
 
 
 
@@ -66,9 +62,9 @@ public class MainScreen implements Screen {
         sellingStock = new ArrayList<>();
         currentCustomer = createRandomCustomer();
 
-        Inventory.add(new Item("Vieille radio", 45, 20, "Commun", 10, "Electronique"));
-        Inventory.add(new Item("Chaise en bois", 70, 15, "Commun", 5, "Mobilier"));
-        Inventory.add(new Item("Vieux vélo", 30, 50, "Commun", 15, "Mécanique"));
+        Inventory.add(new Item("Vieille radio", 45, 20, 20, "Commun", 10, "Electronique"));
+        Inventory.add(new Item("Chaise en bois", 70, 15, 20, "Commun", 5, "Mobilier"));
+        Inventory.add(new Item("Vieux vélo", 30, 50,20 , "Commun", 15, "Mécanique"));
     }
 
     @Override
@@ -78,6 +74,7 @@ public class MainScreen implements Screen {
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
             selectedIndex++;
+            currentSalePrice = Inventory.get(selectedIndex).value;
 
             if (selectedIndex >= Inventory.size()) {
                 selectedIndex = 0;
@@ -86,6 +83,7 @@ public class MainScreen implements Screen {
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
             selectedIndex--;
+            currentSalePrice = Inventory.get(selectedIndex).value;
 
             if (selectedIndex < 0) {
                 selectedIndex = Inventory.size() - 1;
@@ -275,7 +273,7 @@ public class MainScreen implements Screen {
         int sellingY = 260;
         for (Item item : sellingStock) {
             font.draw(batch,
-                    "  " + item.name + " - " + item.value + "€", 500, sellingY);
+                    "  " + item.name + " - " + item.salePrice + "€", 500, sellingY);
             sellingY -= 30;
         }
 
@@ -343,6 +341,7 @@ public class MainScreen implements Screen {
         int conditions = random.nextInt(81) + 20;
         int values = random.nextInt(41) + 10;
         String rarity;
+        int salePrice = values;
         int rarityRoll = random.nextInt(100);
         if (rarityRoll < 50) {
             rarity = "Commun";
@@ -355,7 +354,7 @@ public class MainScreen implements Screen {
         }
 
         int energyCost = random.nextInt(21) + 5; //
-        return new Item(name, conditions, values, rarity, energyCost, type);
+        return new Item(name, conditions, values, salePrice, rarity, energyCost, type);
     }
 
     private Customer createRandomCustomer() {
@@ -379,7 +378,7 @@ public class MainScreen implements Screen {
     private void BuyFromCustomer() {
         for (int i = 0; i < sellingStock.size(); i++) {
             Item item = sellingStock.get(i);
-            if (item.name.equals(currentCustomer.wantedItems) && (item.value <= currentCustomer.budget)) {
+            if (item.name.equals(currentCustomer.wantedItems) && (item.salePrice <= currentCustomer.budget)) {
                 if(currentCustomer.customerType.equals("Exigeant")){
                     if(item.condition < 70){
                         message = currentCustomer.name + "refuse un objet de mauvaise qualité.";
@@ -399,9 +398,9 @@ public class MainScreen implements Screen {
                         reputation += 1;
                     }
                 }
-                money += item.value;
+                money += item.salePrice;
                 sellingStock.remove(i);
-                message = "Vous avez vendu " + item.name + " à " + currentCustomer.name + " pour " + item.value + "€.";
+                message = "Vous avez vendu " + item.name + " à " + currentCustomer.name + " pour " + item.salePrice + "€.";
                 if (item.condition >= 70) {
                     reputation += 5;
                     happyCustomers++;
@@ -417,7 +416,7 @@ public class MainScreen implements Screen {
                     dailyUnhappyCustomers++;
                     message = currentCustomer.name + " est mécontent de son achat.";
                 }
-                dailyMoneyEarned += item.value;
+                dailyMoneyEarned += item.salePrice;
                 dailyItemsSold++;
                 dailyReputationChange += item.condition >= 70 ? 5 : item.condition >= 40 ? 0 : -5;
                 return;
