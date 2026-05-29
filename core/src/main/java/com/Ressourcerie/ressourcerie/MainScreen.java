@@ -51,6 +51,8 @@ public class MainScreen implements Screen {
     private int decorationWorkshopLevel = 1;
     private int textileWorkshopLevel = 0;
     private int currentSalePrice = 0;
+    private int maxInventorySize = 10;
+    private int maxSellingStockSize = 10;
 
     @Override
     public void show() {
@@ -218,6 +220,11 @@ public class MainScreen implements Screen {
                 showSaleMenu = true;
                 Item selectedItem = Inventory.get(selectedIndex);
                 selectedItem.salePrice = currentSalePrice;
+                if(sellingStock.size() >= maxSellingStockSize){
+                    message "Stock de vente plein.";
+                    showSaleMenu = false;
+                    return;
+                }
                 sellingStock.add(selectedItem);
                 Inventory.remove(selectedIndex);
 
@@ -378,7 +385,12 @@ public class MainScreen implements Screen {
 
         int numberOfNewItems = random.nextInt(3) + 2;
         for (int i = 0; i < numberOfNewItems; i++) {
-            Inventory.add(createRandomItem());
+            if (Inventory.size() < maxInventorySize){
+                Inventory.add(createRandomItem());
+            }else{
+                message = "Votre inventaire est plein, vous ne pouvez pas accepter de nouveaux objets.";
+                break;
+            }
         }
 
         selectedIndex = 0;
