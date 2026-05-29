@@ -438,6 +438,17 @@ public class MainScreen implements Screen {
     }
 
     private void BuyFromCustomer() {
+        int expectedPrice = item.value;
+
+        if (item.salePrice > expectedPrice * 1.5){
+            message = currentCustomer.name + " trouve le prix excessif.";
+
+            return;
+        }
+        if (item.salePrice < expectedPrice * 1.5){
+            reputation ++;
+            message = currentCustomer.name + " pense avoir une excellente affaire.";
+        }
         for (int i = 0; i < sellingStock.size(); i++) {
             Item item = sellingStock.get(i);
             if (item.name.equals(currentCustomer.wantedItems) && (item.salePrice <= currentCustomer.budget)) {
