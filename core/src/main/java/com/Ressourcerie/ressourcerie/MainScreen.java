@@ -35,6 +35,7 @@ public class MainScreen implements Screen {
     private boolean showWorkshopMenu = false;
     private boolean showSaleMenu = false;
     private boolean showStockMenu = false;
+    private boolean showHelpMenu = false;
     private int dailyMoneyEarned = 0;
     private int dailyItemsSold = 0;
     private int dailyReputationChange = 0;
@@ -73,6 +74,10 @@ public class MainScreen implements Screen {
     public void render(float delta) {
         Gdx.gl.glClearColor(0.2f, 0.3f, 0.2f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.F1)) {
+            showHelpMenu = !showHelpMenu;
+        }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
             selectedIndex++;
@@ -387,31 +392,52 @@ public class MainScreen implements Screen {
             reputationRank = "Legendaire";
         }
 
-        batch.begin();
-        font.draw(batch, "Argent : " + money + "€", 500, 450);
-        font.draw(batch, "Jour : " + day, 500, 400);
-        font.draw(batch,
-                " R = Réparer | V = Mettre en vente | Haut/Bas = Sélection | B = Acheter café (15€ / + 20 energie) ",
-                100, 450);
-        font.draw(batch, "T = Acheter kit de réparation (40€ / -5 énergie sur réparations)", 100, 420);
-        font.draw(batch, "Énergie : " + energy + "/" + maxEnergy, 500, 350);
-        font.draw(batch, message, 100, 380);
-        // font.draw(batch, "Objets en vente : ", 100, 350);
-        font.draw(batch, "Réputation : " + reputation + " (" + reputationRank + ")", 500, 320);
-        font.draw(batch, "Clients ravis : " + happyCustomers, 500, 290);
-        font.draw(batch, "Clients mécontents : " + unhappyCustomers, 500, 260);
-        font.draw(batch, "Clients neutres : " + neutralCustomers, 500, 230);
-        font.draw(batch, "Bonus de réparation : " + repairBonus, 500, 200);
-        font.draw(batch, "Atelier niveau : " + workshopLevel, 500, 170);
-        font.draw(batch, "Ameliorer atelier : " + workshopUpgradeCost + "€", 100, 60);
-        int y = 300;
+        if (showHelpMenu) {
 
-        // int sellingY = 260;
-        // for (Item item : sellingStock) {
-        // font.draw(batch,
-        // " " + item.name + " - " + item.salePrice + "€", 500, sellingY);
-        // sellingY -= 30;
-        // }
+            batch.begin();
+
+            font.draw(batch, "=== AIDE / COMMANDES ===", 100, 430);
+
+            font.draw(batch, "F1 = fermer l'aide", 100, 390);
+            font.draw(batch, "Haut / Bas = selectionner un objet", 100, 360);
+            font.draw(batch, "R = reparer l'objet selectionne", 100, 330);
+            font.draw(batch, "V = ouvrir le menu de mise en vente", 100, 300);
+            font.draw(batch, "S = ouvrir le stock en vente", 100, 270);
+            font.draw(batch, "B = acheter un cafe", 100, 240);
+            font.draw(batch, "T = acheter un kit de reparation", 100, 210);
+            font.draw(batch, "A = ouvrir les ateliers", 100, 180);
+            font.draw(batch, "C = faire venir un client test", 100, 150);
+            font.draw(batch, "ESPACE = rapport / jour suivant si inventaire vide", 100, 120);
+            font.draw(batch, "ECHAP = annuler certains menus", 100, 90);
+
+            batch.end();
+            return;
+        }
+
+        batch.begin();
+        font.draw(batch, "F1 = Aide | S = Stock, | A = Ateliers", 40, 450);
+        font.draw(batch, message, 100, 380);
+
+        int statsX = 430;
+
+        font.draw(batch, "Argent : " + money + " euros", statsX, 450);
+        font.draw(batch, "Jour : " + day, statsX, 420);
+        font.draw(batch, "Energie : " + energy + "/" + maxEnergy, statsX, 390);
+        font.draw(batch, "Reputation : " + reputation + " (" + reputationRank + ")", statsX, 360);
+        font.draw(batch, "Clients ravis : " + happyCustomers, statsX, 330);
+        font.draw(batch, "Clients neutres : " + neutralCustomers, statsX, 300);
+        font.draw(batch, "Clients decus : " + unhappyCustomers, statsX, 270);
+
+        font.draw(batch, "Client : " + currentCustomer.name
+                + " | Budget : " + currentCustomer.budget
+                + " | Veut : " + currentCustomer.wantedItems
+                + " | Type : " + currentCustomer.customerType,
+                40,
+                90);
+
+        font.draw(batch, "Message : " + message, 40, 60);
+
+        int y = 300;
 
         for (int i = 0; i < Inventory.size(); i++) {
             Item item = Inventory.get(i);
@@ -428,18 +454,15 @@ public class MainScreen implements Screen {
                             + " - Rarete : " + item.rarety
                             + " - Energie : " + getFinalRepairCost(item)
                             + " - Type : " + item.type,
-                    100,
+                    40,
                     y);
 
-            y -= 40;
+            y -= 35;
 
         }
         if (Inventory.isEmpty()) {
             font.draw(batch, "Aucun objet en stock. Appuyez sur ESPACE pour passer au jour suivant.", 100, 300);
         }
-
-        font.draw(batch, "Client : " + currentCustomer.name + " | Budget : " + currentCustomer.budget + "€ | Veut : "
-                + currentCustomer.wantedItems + " | Type : " + currentCustomer.customerType, 100, 120);
 
         batch.end();
 
