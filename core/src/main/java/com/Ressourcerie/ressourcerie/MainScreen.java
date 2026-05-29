@@ -221,7 +221,7 @@ public class MainScreen implements Screen {
                 Item selectedItem = Inventory.get(selectedIndex);
                 selectedItem.salePrice = currentSalePrice;
                 if(sellingStock.size() >= maxSellingStockSize){
-                    message "Stock de vente plein.";
+                    message = "Stock de vente plein.";
                     showSaleMenu = false;
                     return;
                 }
@@ -450,7 +450,10 @@ public class MainScreen implements Screen {
     }
 
     private void BuyFromCustomer() {
-        int expectedPrice = item.value;
+        
+        for (int i = 0; i < sellingStock.size(); i++) {
+            Item item = sellingStock.get(i);
+            int expectedPrice = item.value;
 
         if (item.salePrice > expectedPrice * 1.5){
             message = currentCustomer.name + " trouve le prix excessif.";
@@ -461,8 +464,6 @@ public class MainScreen implements Screen {
             reputation ++;
             message = currentCustomer.name + " pense avoir une excellente affaire.";
         }
-        for (int i = 0; i < sellingStock.size(); i++) {
-            Item item = sellingStock.get(i);
             if (item.name.equals(currentCustomer.wantedItems) && (item.salePrice <= currentCustomer.budget)) {
                 if (currentCustomer.customerType.equals("Exigeant")) {
                     if (item.condition < 70) {
