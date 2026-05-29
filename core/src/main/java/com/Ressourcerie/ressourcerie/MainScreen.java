@@ -34,6 +34,7 @@ public class MainScreen implements Screen {
     private boolean dayReport = false;
     private boolean showWorkshopMenu = false;
     private boolean showSaleMenu = false;
+    private boolean showStockMenu = false;
     private int dailyMoneyEarned = 0;
     private int dailyItemsSold = 0;
     private int dailyReputationChange = 0;
@@ -45,9 +46,9 @@ public class MainScreen implements Screen {
     private int repairBonus = 0;
     private int workshopLevel = 1;
     private int workshopUpgradeCost = 100;
-    private int electronicWorkshopLevel = 0;
-    private int woodWorkshopLevel = 0;
-    private int mechanicalWorkshopLevel = 1;
+    private int electronicWorkshopLevel = 2;
+    private int woodWorkshopLevel = 2;
+    private int mechanicalWorkshopLevel = 2;
     private int decorationWorkshopLevel = 1;
     private int textileWorkshopLevel = 0;
     private int currentSalePrice = 0;
@@ -209,6 +210,10 @@ public class MainScreen implements Screen {
             }
         }
 
+        if (Gdx.input.isKeyJustPressed(Input.Keys.S)) {
+            showStockMenu = !showStockMenu;
+        }
+
         if (Gdx.input.isKeyJustPressed(Input.Keys.C)) {
             BuyFromCustomer();
         }
@@ -236,6 +241,38 @@ public class MainScreen implements Screen {
             currentSalePrice = Inventory.get(selectedIndex).value;
             showSaleMenu = true;
 
+        }
+
+        if (showStockMenu) {
+
+            batch.begin();
+
+            font.draw(batch, "=== STOCK EN VENTE ===", 100, 430);
+            font.draw(batch, "Objets en vente : " + sellingStock.size() + "/" + maxSellingStockSize, 100, 390);
+
+            int y = 350;
+
+            if (sellingStock.isEmpty()) {
+                font.draw(batch, "Aucun objet en vente.", 100, y);
+            } else {
+                for (Item item : sellingStock) {
+                    font.draw(batch,
+                            item.name
+                                    + " | Prix : " + item.salePrice + " euros"
+                                    + " | Etat : " + item.condition + "%"
+                                    + " | Rarete : " + item.rarety
+                                    + " | Type : " + item.type,
+                            100,
+                            y);
+
+                    y -= 30;
+                }
+            }
+
+            font.draw(batch, "S = fermer", 100, 80);
+
+            batch.end();
+            return;
         }
 
         if (showSaleMenu) {
@@ -359,7 +396,7 @@ public class MainScreen implements Screen {
         font.draw(batch, "T = Acheter kit de réparation (40€ / -5 énergie sur réparations)", 100, 420);
         font.draw(batch, "Énergie : " + energy + "/" + maxEnergy, 500, 350);
         font.draw(batch, message, 100, 380);
-        font.draw(batch, "Objets en vente : ", 100, 350);
+        // font.draw(batch, "Objets en vente : ", 100, 350);
         font.draw(batch, "Réputation : " + reputation + " (" + reputationRank + ")", 500, 320);
         font.draw(batch, "Clients ravis : " + happyCustomers, 500, 290);
         font.draw(batch, "Clients mécontents : " + unhappyCustomers, 500, 260);
@@ -369,12 +406,12 @@ public class MainScreen implements Screen {
         font.draw(batch, "Ameliorer atelier : " + workshopUpgradeCost + "€", 100, 60);
         int y = 300;
 
-        int sellingY = 260;
-        for (Item item : sellingStock) {
-            font.draw(batch,
-                    "  " + item.name + " - " + item.salePrice + "€", 500, sellingY);
-            sellingY -= 30;
-        }
+        // int sellingY = 260;
+        // for (Item item : sellingStock) {
+        // font.draw(batch,
+        // " " + item.name + " - " + item.salePrice + "€", 500, sellingY);
+        // sellingY -= 30;
+        // }
 
         for (int i = 0; i < Inventory.size(); i++) {
             Item item = Inventory.get(i);
