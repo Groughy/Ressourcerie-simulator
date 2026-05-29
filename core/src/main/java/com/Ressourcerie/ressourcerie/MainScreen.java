@@ -228,6 +228,11 @@ public class MainScreen implements Screen {
                 sellingStock.add(selectedItem);
                 Inventory.remove(selectedIndex);
 
+                if(Inventory.isEmpty()){
+                message = "Aucun objet à mettre en vente.";
+                return;
+                }
+
                 if (selectedIndex >= Inventory.size()) {
                     selectedIndex = Inventory.size() - 1;
                 }
@@ -236,6 +241,7 @@ public class MainScreen implements Screen {
                     selectedIndex = 0;
                 }
             }
+            
         }
 
         if (showSaleMenu) {
