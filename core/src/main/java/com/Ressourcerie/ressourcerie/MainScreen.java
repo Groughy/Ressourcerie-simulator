@@ -215,36 +215,47 @@ public class MainScreen implements Screen {
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.V)) {
 
-            if (!Inventory.isEmpty()) {
-                currentSalePrice = Inventory.get(selectedIndex).value;
-                showSaleMenu = true;
-                Item selectedItem = Inventory.get(selectedIndex);
-                selectedItem.salePrice = currentSalePrice;
-                if(sellingStock.size() >= maxSellingStockSize){
-                    message = "Stock de vente plein.";
-                    showSaleMenu = false;
-                    return;
-                }
-                sellingStock.add(selectedItem);
-                Inventory.remove(selectedIndex);
-
-                if(Inventory.isEmpty()){
+            if (Inventory.isEmpty()) {
                 message = "Aucun objet à mettre en vente.";
                 return;
-                }
-
-                if (selectedIndex >= Inventory.size()) {
-                    selectedIndex = Inventory.size() - 1;
-                }
-
-                if (selectedIndex < 0) {
-                    selectedIndex = 0;
-                }
             }
-            
+
+            if (sellingStock.size() >= maxSellingStockSize) {
+                message = "Stock de vente plein.";
+                return;
+            }
+
+            if (selectedIndex >= Inventory.size()) {
+                selectedIndex = Inventory.size() - 1;
+            }
+
+            if (selectedIndex < 0) {
+                selectedIndex = 0;
+            }
+
+            currentSalePrice = Inventory.get(selectedIndex).value;
+            showSaleMenu = true;
+
         }
 
         if (showSaleMenu) {
+
+            if (Inventory.isEmpty()) {
+                showSaleMenu = false;
+                message = "Aucun objet a mettre en vente.";
+                return;
+            }
+
+            if (selectedIndex >= Inventory.size()) {
+                selectedIndex = Inventory.size() - 1;
+            }
+
+            if (selectedIndex < 0) {
+                selectedIndex = 0;
+            }
+
+            Item selectedItem = Inventory.get(selectedIndex);
+
             if (Gdx.input.isKeyJustPressed(Input.Keys.PLUS)
                     || Gdx.input.isKeyJustPressed(Input.Keys.EQUALS)) {
                 currentSalePrice += 5;
@@ -259,7 +270,7 @@ public class MainScreen implements Screen {
             }
 
             if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
-                Item selectedItem = Inventory.get(selectedIndex);
+
                 selectedItem.salePrice = currentSalePrice;
 
                 sellingStock.add(selectedItem);
@@ -275,15 +286,16 @@ public class MainScreen implements Screen {
 
                 showSaleMenu = false;
                 message = "Objet mis en vente.";
+
+                return;
             }
 
             if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
                 showSaleMenu = false;
+                return;
             }
 
             batch.begin();
-
-            Item selectedItem = Inventory.get(selectedIndex);
 
             font.draw(batch, "=== MISE EN VENTE ===", 100, 420);
             font.draw(batch, selectedItem.name, 100, 380);
@@ -326,6 +338,18 @@ public class MainScreen implements Screen {
             }
         }
 
+        String reputationRank;
+
+        if (reputation < 30) {
+            reputationRank = "Mauvaise";
+        } else if (reputation < 70) {
+            reputationRank = "Correcte";
+        } else if (reputation < 90) {
+            reputationRank = "Excellente";
+        } else {
+            reputationRank = "Legendaire";
+        }
+
         batch.begin();
         font.draw(batch, "Argent : " + money + "€", 500, 450);
         font.draw(batch, "Jour : " + day, 500, 400);
@@ -336,7 +360,7 @@ public class MainScreen implements Screen {
         font.draw(batch, "Énergie : " + energy + "/" + maxEnergy, 500, 350);
         font.draw(batch, message, 100, 380);
         font.draw(batch, "Objets en vente : ", 100, 350);
-        font.draw(batch, "Réputation : " + reputation, 500, 320);
+        font.draw(batch, "Réputation : " + reputation + " (" + reputationRank + ")", 500, 320);
         font.draw(batch, "Clients ravis : " + happyCustomers, 500, 290);
         font.draw(batch, "Clients mécontents : " + unhappyCustomers, 500, 260);
         font.draw(batch, "Clients neutres : " + neutralCustomers, 500, 230);
@@ -391,17 +415,24 @@ public class MainScreen implements Screen {
 
         int numberOfNewItems = random.nextInt(3) + 2;
         for (int i = 0; i < numberOfNewItems; i++) {
-            if (Inventory.size() < maxInventorySize){
+            if (Inventory.size() < maxInventorySize) {
                 Inventory.add(createRandomItem());
-            }else{
+            } else {
                 message = "Votre inventaire est plein, vous ne pouvez pas accepter de nouveaux objets.";
                 break;
             }
         }
 
+        int customersToday = getCustomersPerDay();
+
+        for (int i = 0; i < customersToday; i++) {
+
+            currentCustomer = createRandomCustomer();
+
+            BuyFromCustomer();
+        }
+
         selectedIndex = 0;
-        currentCustomer = createRandomCustomer();
-        BuyFromCustomer();
         dailyMoneyEarned = 0;
         dailyItemsSold = 0;
         dailyHappyCustomers = 0;
@@ -451,25 +482,34 @@ public class MainScreen implements Screen {
                 "Bricoleur",
                 "Exigeant"
         };
-        String customerType = customerTypes[random.nextInt(customerTypes.length)];
+        String customerType;
+
+        if (reputation > 80 && random.nextInt(100) < 40) {
+
+            customerType = "Collectionneur";
+
+        } else {
+
+            customerType = customerTypes[random.nextInt(customerTypes.length)];
+        }
         return new Customer(name, budget, wantedItem, customerType);
     }
 
     private void BuyFromCustomer() {
-        
+
         for (int i = 0; i < sellingStock.size(); i++) {
             Item item = sellingStock.get(i);
             int expectedPrice = item.value;
 
-        if (item.salePrice > expectedPrice * 1.5){
-            message = currentCustomer.name + " trouve le prix excessif.";
+            if (item.salePrice > expectedPrice * 1.5) {
+                message = currentCustomer.name + " trouve le prix excessif.";
 
-            return;
-        }
-        if (item.salePrice < expectedPrice * 1.5){
-            reputation ++;
-            message = currentCustomer.name + " pense avoir une excellente affaire.";
-        }
+                return;
+            }
+            if (item.salePrice < expectedPrice * 1.5) {
+                reputation++;
+                message = currentCustomer.name + " pense avoir une excellente affaire.";
+            }
             if (item.name.equals(currentCustomer.wantedItems) && (item.salePrice <= currentCustomer.budget)) {
                 if (currentCustomer.customerType.equals("Exigeant")) {
                     if (item.condition < 70) {
@@ -607,6 +647,18 @@ public class MainScreen implements Screen {
     private int getRepairAmount(Item item) {
         int workshopLevel = getWorkshopLevelForItem(item);
         return 5 + (workshopLevel * 5);
+    }
+
+    private int getCustomersPerDay() {
+        if (reputation < 30) {
+            return 1;
+        } else if (reputation < 60) {
+            return 2;
+        } else if (reputation < 90) {
+            return 3;
+        } else {
+            return 4;
+        }
     }
 
     @Override
