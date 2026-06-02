@@ -55,6 +55,8 @@ public class MainScreen implements Screen {
     private int currentSalePrice = 0;
     private int maxInventorySize = 10;
     private int maxSellingStockSize = 10;
+    private int storageLevel = 1;
+    private int storageUpgradeCost = 120;
 
     @Override
     public void show() {
@@ -251,11 +253,26 @@ public class MainScreen implements Screen {
         if (showStockMenu) {
 
             batch.begin();
+            font.draw(batch, "=== ENTREPOT ===", 100, 430);
+            font.draw(batch, "Entrepot niveau : " + storageLevel, 100, 390);
+            font.draw(batch, "Stock réparation : " + Inventory.size() + "/" + maxInventorySize, 100, 360);
+            font.draw(batch, "Stock vente : " + sellingStock.size() + "/" + maxSellingStockSize, 100, 330);
+            font.draw(batch, "Amélioration entrepot : " + storageUpgradeCost + "euros", 100,300);
+            font.draw(batch, "6 = Améliorer entrepot", 100, 270);
+            int y = 230;
 
-            font.draw(batch, "=== STOCK EN VENTE ===", 100, 430);
-            font.draw(batch, "Objets en vente : " + sellingStock.size() + "/" + maxSellingStockSize, 100, 390);
-
-            int y = 350;
+            if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_6)) {
+                if (money >= storageUpgradeCost) {
+                    money -= storageUpgradeCost;
+                    storageLevel++;
+                    maxInventorySize += 5;
+                    maxSellingStockSize += 5;
+                    storageUpgradeCost += 120;
+                    message = "Entrepot amélioré à niveau " + storageLevel + " ! Capacité augmentée.";
+                } else {
+                    message = "Pas assez d'argent pour améliorer l'entrepot.";
+                }
+            }
 
             if (sellingStock.isEmpty()) {
                 font.draw(batch, "Aucun objet en vente.", 100, y);
