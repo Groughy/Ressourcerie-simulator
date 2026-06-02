@@ -81,22 +81,10 @@ public class MainScreen implements Screen {
             showHelpMenu = !showHelpMenu;
         }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
-            selectedIndex++;
-            currentSalePrice = Inventory.get(selectedIndex).value;
+        handleInventorySelection();
 
-            if (selectedIndex >= Inventory.size()) {
-                selectedIndex = 0;
-            }
-        }
-
-        if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
-            selectedIndex--;
-            currentSalePrice = Inventory.get(selectedIndex).value;
-
-            if (selectedIndex < 0) {
-                selectedIndex = Inventory.size() - 1;
-            }
+        if (Gdx.input.isKeyJustPressed(Input.Keys.B)) {
+            buyCoffee();
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.PLUS) || Gdx.input.isKeyJustPressed(Input.Keys.EQUALS)) {
@@ -176,45 +164,8 @@ public class MainScreen implements Screen {
 
         if (dayReport) {
 
-            batch.begin();
-
-            font.draw(batch, "Rapport du jour " + day + " : ", 100, 200);
-            font.draw(batch, "Argent gagné : " + dailyMoneyEarned + "€", 100, 170);
-            font.draw(batch, "Objets vendus : " + dailyItemsSold, 100, 140);
-            font.draw(batch,
-                    "Changement de réputation : " + (dailyReputationChange >= 0 ? "+" : "") + dailyReputationChange,
-                    100, 110);
-            font.draw(batch,
-                    "Clients ravis : " + dailyHappyCustomers,
-                    100,
-                    320);
-
-            font.draw(batch,
-                    "Clients neutres : " + dailyNeutralCustomers,
-                    100,
-                    290);
-
-            font.draw(batch,
-                    "Clients decus : " + dailyUnhappyCustomers,
-                    100,
-                    260);
-            font.draw(batch, "Appuyez sur ENTRÉE pour continuer.", 100, 80);
-
-            batch.end();
+            renderDayReport();
             return;
-        }
-
-        if (Gdx.input.isKeyJustPressed(Input.Keys.B)) {
-            if (money >= coffeeCost) {
-                money -= coffeeCost;
-                energy += coffeeEnergyBoost;
-                if (energy > maxEnergy) {
-                    energy = maxEnergy;
-                }
-                message = "Vous avez bu un café. Énergie restaurée de " + coffeeEnergyBoost + ".";
-            } else {
-                message = "Pas assez d'argent pour acheter un café.";
-            }
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.S)) {
@@ -369,13 +320,7 @@ public class MainScreen implements Screen {
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.T)) {
-            if (money >= 40) {
-                money -= 40;
-                repairBonus += 5;
-                message = "Vous avez acheté un kit de réparation. -5 energie sur les réparations d'aujourd'hui.";
-            } else {
-                message = "Pas assez d'argent pour acheter un kit de réparation.";
-            }
+            buyRepairKit();
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.U)) {
@@ -736,6 +681,82 @@ public class MainScreen implements Screen {
         } else {
             return 4;
         }
+    }
+
+    private void handleInventorySelection(){
+
+        if (Inventory.isEmpty()){
+            return;
+        }
+
+         if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
+            selectedIndex++;
+
+            if (selectedIndex >= Inventory.size()) {
+                selectedIndex = 0;
+            }
+        }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
+            selectedIndex--;
+
+            if (selectedIndex < 0) {
+                selectedIndex = Inventory.size() - 1;
+            }
+        }
+    }
+
+    private void buyCoffee(){
+       
+            if (money >= coffeeCost) {
+                money -= coffeeCost;
+                energy += coffeeEnergyBoost;
+                if (energy > maxEnergy) {
+                    energy = maxEnergy;
+                }
+                message = "Vous avez bu un café. Énergie restaurée de " + coffeeEnergyBoost + ".";
+            } else {
+                message = "Pas assez d'argent pour acheter un café.";
+            }
+
+    }
+
+    private void buyRepairKit(){
+        if (money >= 40) {
+                money -= 40;
+                repairBonus += 5;
+                message = "Vous avez acheté un kit de réparation. -5 energie sur les réparations d'aujourd'hui.";
+            } else {
+                message = "Pas assez d'argent pour acheter un kit de réparation.";
+            }
+    }
+
+    private void renderDayReport(){
+        batch.begin();
+
+            font.draw(batch, "Rapport du jour " + day + " : ", 100, 200);
+            font.draw(batch, "Argent gagné : " + dailyMoneyEarned + "€", 100, 170);
+            font.draw(batch, "Objets vendus : " + dailyItemsSold, 100, 140);
+            font.draw(batch,
+                    "Changement de réputation : " + (dailyReputationChange >= 0 ? "+" : "") + dailyReputationChange,
+                    100, 110);
+            font.draw(batch,
+                    "Clients ravis : " + dailyHappyCustomers,
+                    100,
+                    320);
+
+            font.draw(batch,
+                    "Clients neutres : " + dailyNeutralCustomers,
+                    100,
+                    290);
+
+            font.draw(batch,
+                    "Clients decus : " + dailyUnhappyCustomers,
+                    100,
+                    260);
+            font.draw(batch, "Appuyez sur ENTRÉE pour continuer.", 100, 80);
+
+            batch.end();
     }
 
     @Override
