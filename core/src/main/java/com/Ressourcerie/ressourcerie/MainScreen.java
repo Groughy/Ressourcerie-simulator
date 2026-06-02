@@ -131,34 +131,7 @@ public class MainScreen implements Screen {
 
         if (showWorkshopMenu) {
 
-            if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)) {
-                electronicWorkshopLevel = upgradeWorkshop(electronicWorkshopLevel, "Atelier electronique");
-            }
-            if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)) {
-                mechanicalWorkshopLevel = upgradeWorkshop(mechanicalWorkshopLevel, "Atelier mecanique");
-            }
-            if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)) {
-                woodWorkshopLevel = upgradeWorkshop(woodWorkshopLevel, "Atelier mobilier");
-            }
-            if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_4)) {
-                decorationWorkshopLevel = upgradeWorkshop(decorationWorkshopLevel, "Atelier decoration");
-            }
-            if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_5)) {
-                textileWorkshopLevel = upgradeWorkshop(textileWorkshopLevel, "Atelier Textile");
-            }
-
-            batch.begin();
-
-            font.draw(batch, "=== ATELIERS ===", 100, 420);
-            font.draw(batch, "1, - Electronique niv. " + electronicWorkshopLevel, 100, 370);
-            font.draw(batch, "2, - Mécanique niv. " + mechanicalWorkshopLevel, 100, 340);
-            font.draw(batch, "3, - Mobilier niv. " + woodWorkshopLevel, 100, 310);
-            font.draw(batch, "4, - Décoration niv. " + decorationWorkshopLevel, 100, 280);
-            font.draw(batch, "5, - Textile niv. " + textileWorkshopLevel, 100, 250);
-            font.draw(batch, "Appuyez sur le numéro de l'atelier pour l'améliorer.", 100, 220);
-            font.draw(batch, "Appuyez sur A pour fermer ce menu.", 100, 190);
-
-            batch.end();
+            renderWorkshopMenu();
             return;
         }
 
@@ -203,48 +176,7 @@ public class MainScreen implements Screen {
 
         if (showStockMenu) {
 
-            batch.begin();
-            font.draw(batch, "=== ENTREPOT ===", 100, 430);
-            font.draw(batch, "Entrepot niveau : " + storageLevel, 100, 390);
-            font.draw(batch, "Stock réparation : " + Inventory.size() + "/" + maxInventorySize, 100, 360);
-            font.draw(batch, "Stock vente : " + sellingStock.size() + "/" + maxSellingStockSize, 100, 330);
-            font.draw(batch, "Amélioration entrepot : " + storageUpgradeCost + "euros", 100,300);
-            font.draw(batch, "6 = Améliorer entrepot", 100, 270);
-            int y = 230;
-
-            if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_6)) {
-                if (money >= storageUpgradeCost) {
-                    money -= storageUpgradeCost;
-                    storageLevel++;
-                    maxInventorySize += 5;
-                    maxSellingStockSize += 5;
-                    storageUpgradeCost += 120;
-                    message = "Entrepot amélioré à niveau " + storageLevel + " ! Capacité augmentée.";
-                } else {
-                    message = "Pas assez d'argent pour améliorer l'entrepot.";
-                }
-            }
-
-            if (sellingStock.isEmpty()) {
-                font.draw(batch, "Aucun objet en vente.", 100, y);
-            } else {
-                for (Item item : sellingStock) {
-                    font.draw(batch,
-                            item.name
-                                    + " | Prix : " + item.salePrice + " euros"
-                                    + " | Etat : " + item.condition + "%"
-                                    + " | Rarete : " + item.rarety
-                                    + " | Type : " + item.type,
-                            100,
-                            y);
-
-                    y -= 30;
-                }
-            }
-
-            font.draw(batch, "S = fermer", 100, 80);
-
-            batch.end();
+           renderStockMenu();
             return;
         }
 
@@ -356,23 +288,7 @@ public class MainScreen implements Screen {
 
         if (showHelpMenu) {
 
-            batch.begin();
-
-            font.draw(batch, "=== AIDE / COMMANDES ===", 100, 430);
-
-            font.draw(batch, "F1 = fermer l'aide", 100, 390);
-            font.draw(batch, "Haut / Bas = selectionner un objet", 100, 360);
-            font.draw(batch, "R = reparer l'objet selectionne", 100, 330);
-            font.draw(batch, "V = ouvrir le menu de mise en vente", 100, 300);
-            font.draw(batch, "S = ouvrir le stock en vente", 100, 270);
-            font.draw(batch, "B = acheter un cafe", 100, 240);
-            font.draw(batch, "T = acheter un kit de reparation", 100, 210);
-            font.draw(batch, "A = ouvrir les ateliers", 100, 180);
-            font.draw(batch, "C = faire venir un client test", 100, 150);
-            font.draw(batch, "ESPACE = rapport / jour suivant si inventaire vide", 100, 120);
-            font.draw(batch, "ECHAP = annuler certains menus", 100, 90);
-
-            batch.end();
+            renderHelpMenu();
             return;
         }
 
@@ -755,6 +671,102 @@ public class MainScreen implements Screen {
                     100,
                     260);
             font.draw(batch, "Appuyez sur ENTRÉE pour continuer.", 100, 80);
+
+            batch.end();
+    }
+
+    private void renderHelpMenu(){
+        batch.begin();
+
+            font.draw(batch, "=== AIDE / COMMANDES ===", 100, 430);
+
+            font.draw(batch, "F1 = fermer l'aide", 100, 390);
+            font.draw(batch, "Haut / Bas = selectionner un objet", 100, 360);
+            font.draw(batch, "R = reparer l'objet selectionne", 100, 330);
+            font.draw(batch, "V = ouvrir le menu de mise en vente", 100, 300);
+            font.draw(batch, "S = ouvrir le stock en vente", 100, 270);
+            font.draw(batch, "B = acheter un cafe", 100, 240);
+            font.draw(batch, "T = acheter un kit de reparation", 100, 210);
+            font.draw(batch, "A = ouvrir les ateliers", 100, 180);
+            font.draw(batch, "C = faire venir un client test", 100, 150);
+            font.draw(batch, "ESPACE = rapport / jour suivant si inventaire vide", 100, 120);
+            font.draw(batch, "ECHAP = annuler certains menus", 100, 90);
+
+            batch.end();
+    }
+
+    private void renderWorkshopMenu(){
+        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)) {
+                electronicWorkshopLevel = upgradeWorkshop(electronicWorkshopLevel, "Atelier electronique");
+            }
+            if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)) {
+                mechanicalWorkshopLevel = upgradeWorkshop(mechanicalWorkshopLevel, "Atelier mecanique");
+            }
+            if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)) {
+                woodWorkshopLevel = upgradeWorkshop(woodWorkshopLevel, "Atelier mobilier");
+            }
+            if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_4)) {
+                decorationWorkshopLevel = upgradeWorkshop(decorationWorkshopLevel, "Atelier decoration");
+            }
+            if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_5)) {
+                textileWorkshopLevel = upgradeWorkshop(textileWorkshopLevel, "Atelier Textile");
+            }
+
+            batch.begin();
+
+            font.draw(batch, "=== ATELIERS ===", 100, 420);
+            font.draw(batch, "1, - Electronique niv. " + electronicWorkshopLevel, 100, 370);
+            font.draw(batch, "2, - Mécanique niv. " + mechanicalWorkshopLevel, 100, 340);
+            font.draw(batch, "3, - Mobilier niv. " + woodWorkshopLevel, 100, 310);
+            font.draw(batch, "4, - Décoration niv. " + decorationWorkshopLevel, 100, 280);
+            font.draw(batch, "5, - Textile niv. " + textileWorkshopLevel, 100, 250);
+            font.draw(batch, "Appuyez sur le numéro de l'atelier pour l'améliorer.", 100, 220);
+            font.draw(batch, "Appuyez sur A pour fermer ce menu.", 100, 190);
+
+            batch.end();
+    }
+
+    private void renderStockMenu(){
+         batch.begin();
+            font.draw(batch, "=== ENTREPOT ===", 100, 430);
+            font.draw(batch, "Entrepot niveau : " + storageLevel, 100, 390);
+            font.draw(batch, "Stock réparation : " + Inventory.size() + "/" + maxInventorySize, 100, 360);
+            font.draw(batch, "Stock vente : " + sellingStock.size() + "/" + maxSellingStockSize, 100, 330);
+            font.draw(batch, "Amélioration entrepot : " + storageUpgradeCost + "euros", 100,300);
+            font.draw(batch, "6 = Améliorer entrepot", 100, 270);
+            int y = 230;
+
+            if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_6)) {
+                if (money >= storageUpgradeCost) {
+                    money -= storageUpgradeCost;
+                    storageLevel++;
+                    maxInventorySize += 5;
+                    maxSellingStockSize += 5;
+                    storageUpgradeCost += 120;
+                    message = "Entrepot amélioré à niveau " + storageLevel + " ! Capacité augmentée.";
+                } else {
+                    message = "Pas assez d'argent pour améliorer l'entrepot.";
+                }
+            }
+
+            if (sellingStock.isEmpty()) {
+                font.draw(batch, "Aucun objet en vente.", 100, y);
+            } else {
+                for (Item item : sellingStock) {
+                    font.draw(batch,
+                            item.name
+                                    + " | Prix : " + item.salePrice + " euros"
+                                    + " | Etat : " + item.condition + "%"
+                                    + " | Rarete : " + item.rarety
+                                    + " | Type : " + item.type,
+                            100,
+                            y);
+
+                    y -= 30;
+                }
+            }
+
+            font.draw(batch, "S = fermer", 100, 80);
 
             batch.end();
     }
