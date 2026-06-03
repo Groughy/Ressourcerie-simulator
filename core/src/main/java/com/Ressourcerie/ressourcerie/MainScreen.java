@@ -77,29 +77,8 @@ public class MainScreen implements Screen {
         Gdx.gl.glClearColor(0.2f, 0.3f, 0.2f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.F1)) {
-            showHelpMenu = !showHelpMenu;
-        }
-
         handleInventorySelection();
-
-        if (Gdx.input.isKeyJustPressed(Input.Keys.B)) {
-            buyCoffee();
-        }
-
-        if (Gdx.input.isKeyJustPressed(Input.Keys.PLUS) || Gdx.input.isKeyJustPressed(Input.Keys.EQUALS)) {
-            currentSalePrice += 5;
-        }
-
-        if (Gdx.input.isKeyJustPressed(Input.Keys.MINUS)) {
-            currentSalePrice -= 5;
-        }
-
-        if (Gdx.input.isKeyJustPressed(Input.Keys.R)) {
-
-            repairItem();
-            return;
-        }
+        handleInputs();
 
         if (dayReport) {
             if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
@@ -107,10 +86,6 @@ public class MainScreen implements Screen {
                 nextDay();
                 return;
             }
-        }
-
-        if (Gdx.input.isKeyJustPressed(Input.Keys.A)) {
-            showWorkshopMenu = !showWorkshopMenu;
         }
 
         if (showWorkshopMenu) {
@@ -125,39 +100,6 @@ public class MainScreen implements Screen {
             return;
         }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.S)) {
-            showStockMenu = !showStockMenu;
-        }
-
-        if (Gdx.input.isKeyJustPressed(Input.Keys.C)) {
-            BuyFromCustomer();
-        }
-
-        if (Gdx.input.isKeyJustPressed(Input.Keys.V)) {
-
-            if (Inventory.isEmpty()) {
-                message = "Aucun objet à mettre en vente.";
-                return;
-            }
-
-            if (sellingStock.size() >= maxSellingStockSize) {
-                message = "Stock de vente plein.";
-                return;
-            }
-
-            if (selectedIndex >= Inventory.size()) {
-                selectedIndex = Inventory.size() - 1;
-            }
-
-            if (selectedIndex < 0) {
-                selectedIndex = 0;
-            }
-
-            currentSalePrice = Inventory.get(selectedIndex).value;
-            showSaleMenu = true;
-
-        }
-
         if (showStockMenu) {
 
            renderStockMenu();
@@ -168,23 +110,6 @@ public class MainScreen implements Screen {
 
             renderSaleMenu();
             return;
-        }
-
-        if (Gdx.input.isKeyJustPressed(Input.Keys.T)) {
-            buyRepairKit();
-        }
-
-        if (Gdx.input.isKeyJustPressed(Input.Keys.U)) {
-            if (money >= workshopUpgradeCost) {
-                money -= workshopUpgradeCost;
-                workshopLevel++;
-                repairBonus += 2;
-                workshopUpgradeCost += 100;
-                message = "Vous avez amélioré votre atelier à niveau " + workshopLevel
-                        + ". Bonus de réparation augmenté de 5.";
-            } else {
-                message = "Pas assez d'argent pour améliorer l'atelier.";
-            }
         }
 
         if (Inventory.isEmpty()) {
@@ -778,6 +703,85 @@ public class MainScreen implements Screen {
                 }
 
             }
+    }
+
+    private void handleInputs(){
+        if (Gdx.input.isKeyJustPressed(Input.Keys.T)) {
+            buyRepairKit();
+        }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.U)) {
+            if (money >= workshopUpgradeCost) {
+                money -= workshopUpgradeCost;
+                workshopLevel++;
+                repairBonus += 2;
+                workshopUpgradeCost += 100;
+                message = "Vous avez amélioré votre atelier à niveau " + workshopLevel
+                        + ". Bonus de réparation augmenté de 5.";
+            } else {
+                message = "Pas assez d'argent pour améliorer l'atelier.";
+            }
+        }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.F1)) {
+            showHelpMenu = !showHelpMenu;
+        }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.B)) {
+            buyCoffee();
+        }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.PLUS) || Gdx.input.isKeyJustPressed(Input.Keys.EQUALS)) {
+            currentSalePrice += 5;
+        }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.MINUS)) {
+            currentSalePrice -= 5;
+        }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.R)) {
+
+            repairItem();
+            return;
+        }
+
+         if (Gdx.input.isKeyJustPressed(Input.Keys.A)) {
+            showWorkshopMenu = !showWorkshopMenu;
+        }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.S)) {
+            showStockMenu = !showStockMenu;
+        }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.C)) {
+            BuyFromCustomer();
+        }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.V)) {
+
+            if (Inventory.isEmpty()) {
+                message = "Aucun objet à mettre en vente.";
+                return;
+            }
+
+            if (sellingStock.size() >= maxSellingStockSize) {
+                message = "Stock de vente plein.";
+                return;
+            }
+
+            if (selectedIndex >= Inventory.size()) {
+                selectedIndex = Inventory.size() - 1;
+            }
+
+            if (selectedIndex < 0) {
+                selectedIndex = 0;
+            }
+
+            currentSalePrice = Inventory.get(selectedIndex).value;
+            showSaleMenu = true;
+
+        }
+
     }
 
     @Override
