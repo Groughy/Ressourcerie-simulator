@@ -97,24 +97,8 @@ public class MainScreen implements Screen {
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.R)) {
 
-            if (!Inventory.isEmpty()) {
-
-                Item selectedItem = Inventory.get(selectedIndex);
-                if (!canRepair(selectedItem)) {
-                    message = "Améliore ton atelier pour faire ça. Atelier requis : " + selectedItem.type;
-                    return;
-                }
-
-                int repairCost = getFinalRepairCost(selectedItem);
-                if (energy >= repairCost) {
-                    energy -= repairCost;
-                    int repairAmount = getRepairAmount(selectedItem);
-                    selectedItem.repair(repairAmount);
-                } else {
-                    message = "Pas assez d'énergie pour réparer cet objet.";
-                }
-
-            }
+            repairItem();
+            return;
         }
 
         if (dayReport) {
@@ -182,72 +166,7 @@ public class MainScreen implements Screen {
 
         if (showSaleMenu) {
 
-            if (Inventory.isEmpty()) {
-                showSaleMenu = false;
-                message = "Aucun objet a mettre en vente.";
-                return;
-            }
-
-            if (selectedIndex >= Inventory.size()) {
-                selectedIndex = Inventory.size() - 1;
-            }
-
-            if (selectedIndex < 0) {
-                selectedIndex = 0;
-            }
-
-            Item selectedItem = Inventory.get(selectedIndex);
-
-            if (Gdx.input.isKeyJustPressed(Input.Keys.PLUS)
-                    || Gdx.input.isKeyJustPressed(Input.Keys.EQUALS)) {
-                currentSalePrice += 5;
-            }
-
-            if (Gdx.input.isKeyJustPressed(Input.Keys.MINUS)) {
-                currentSalePrice -= 5;
-
-                if (currentSalePrice < 1) {
-                    currentSalePrice = 1;
-                }
-            }
-
-            if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
-
-                selectedItem.salePrice = currentSalePrice;
-
-                sellingStock.add(selectedItem);
-                Inventory.remove(selectedIndex);
-
-                if (selectedIndex >= Inventory.size()) {
-                    selectedIndex = Inventory.size() - 1;
-                }
-
-                if (selectedIndex < 0) {
-                    selectedIndex = 0;
-                }
-
-                showSaleMenu = false;
-                message = "Objet mis en vente.";
-
-                return;
-            }
-
-            if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-                showSaleMenu = false;
-                return;
-            }
-
-            batch.begin();
-
-            font.draw(batch, "=== MISE EN VENTE ===", 100, 420);
-            font.draw(batch, selectedItem.name, 100, 380);
-            font.draw(batch, "Valeur conseillee : " + selectedItem.value + " euros", 100, 340);
-            font.draw(batch, "Prix choisi : " + currentSalePrice + " euros", 100, 300);
-            font.draw(batch, "+ / - = modifier le prix", 100, 250);
-            font.draw(batch, "ENTREE = confirmer", 100, 220);
-            font.draw(batch, "ECHAP = annuler", 100, 190);
-
-            batch.end();
+            renderSaleMenu();
             return;
         }
 
@@ -367,8 +286,8 @@ public class MainScreen implements Screen {
 
             currentCustomer = createRandomCustomer();
 
-            BuyFromCustomer();
         }
+            BuyFromCustomer();
 
         selectedIndex = 0;
         dailyMoneyEarned = 0;
@@ -769,6 +688,96 @@ public class MainScreen implements Screen {
             font.draw(batch, "S = fermer", 100, 80);
 
             batch.end();
+    }
+
+    private void renderSaleMenu(){
+        if (Inventory.isEmpty()) {
+                showSaleMenu = false;
+                message = "Aucun objet a mettre en vente.";
+                return;
+            }
+
+            if (selectedIndex >= Inventory.size()) {
+                selectedIndex = Inventory.size() - 1;
+            }
+
+            if (selectedIndex < 0) {
+                selectedIndex = 0;
+            }
+
+            Item selectedItem = Inventory.get(selectedIndex);
+
+            if (Gdx.input.isKeyJustPressed(Input.Keys.PLUS)
+                    || Gdx.input.isKeyJustPressed(Input.Keys.EQUALS)) {
+                currentSalePrice += 5;
+            }
+
+            if (Gdx.input.isKeyJustPressed(Input.Keys.MINUS)) {
+                currentSalePrice -= 5;
+
+                if (currentSalePrice < 1) {
+                    currentSalePrice = 1;
+                }
+            }
+
+            if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+
+                selectedItem.salePrice = currentSalePrice;
+
+                sellingStock.add(selectedItem);
+                Inventory.remove(selectedIndex);
+
+                if (selectedIndex >= Inventory.size()) {
+                    selectedIndex = Inventory.size() - 1;
+                }
+
+                if (selectedIndex < 0) {
+                    selectedIndex = 0;
+                }
+
+                showSaleMenu = false;
+                message = "Objet mis en vente.";
+
+                return;
+            }
+
+            if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+                showSaleMenu = false;
+                return;
+            }
+
+            batch.begin();
+
+            font.draw(batch, "=== MISE EN VENTE ===", 100, 420);
+            font.draw(batch, selectedItem.name, 100, 380);
+            font.draw(batch, "Valeur conseillee : " + selectedItem.value + " euros", 100, 340);
+            font.draw(batch, "Prix choisi : " + currentSalePrice + " euros", 100, 300);
+            font.draw(batch, "+ / - = modifier le prix", 100, 250);
+            font.draw(batch, "ENTREE = confirmer", 100, 220);
+            font.draw(batch, "ECHAP = annuler", 100, 190);
+
+            batch.end(); 
+    }
+
+    private void repairItem(){
+        if (!Inventory.isEmpty()) {
+
+                Item selectedItem = Inventory.get(selectedIndex);
+                if (!canRepair(selectedItem)) {
+                    message = "Améliore ton atelier pour faire ça. Atelier requis : " + selectedItem.type;
+                    return;
+                }
+
+                int repairCost = getFinalRepairCost(selectedItem);
+                if (energy >= repairCost) {
+                    energy -= repairCost;
+                    int repairAmount = getRepairAmount(selectedItem);
+                    selectedItem.repair(repairAmount);
+                } else {
+                    message = "Pas assez d'énergie pour réparer cet objet.";
+                }
+
+            }
     }
 
     @Override
