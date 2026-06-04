@@ -7,7 +7,6 @@ import java.util.Random;
 
 import com.Ressourcerie.ressourcerie.customer.Customer;
 import com.Ressourcerie.ressourcerie.items.Item;
-import com.Ressourcerie.ressourcerie.SaveData;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.files.FileHandle;
@@ -296,67 +295,89 @@ public class MainScreen implements Screen {
         return new Customer(name, budget, wantedItem, customerType);
     }
 
+    private boolean customerWantsItem(Item item){
+        return item.name.equals(currentCustomer.wantedItems);
+    }
+
+    private boolean customerCanPay(Item item){
+        return item.salePrice <= currentCustomer.budget;
+    }
+
+    private boolean isPriceTooHigh(Item item){
+        return item.salePrice > item.value * 1.5;
+    }
+
+    private boolean isGoodDeal(Item item){
+        return item.salePrice < item.value * 0.8;
+    }
+
+
     private void BuyFromCustomer() {
 
         for (int i = 0; i < sellingStock.size(); i++) {
             Item item = sellingStock.get(i);
             int expectedPrice = item.value;
 
-            if (item.salePrice > expectedPrice * 1.5) {
-                message = currentCustomer.name + " trouve le prix excessif.";
+            if (!customerWantsItem(item)){
+                continue;
+            }
+            if (!customerCanPay(item)){
+                message = currentCustomer.name + " n'a pas assez d'argent.";
+                return;
+            }
+            if (isPriceTooHigh(item)){
+                message = currentCustomer.name + " trouve le prix trop élevé.";
+                return;
+            }
+            if (currentCustomer.customerType.equals("Exigeant") && item.condition < 70){
+                message = currentCustomer.name + " refuse d'acheter un objet en mauvais état.";
+                return;
+            }
 
-                return;
-            }
-            if (item.salePrice < expectedPrice * 1.5) {
-                reputation++;
-                message = currentCustomer.name + " pense avoir une excellente affaire.";
-            }
-            if (item.name.equals(currentCustomer.wantedItems) && (item.salePrice <= currentCustomer.budget)) {
-                if (currentCustomer.customerType.equals("Exigeant")) {
-                    if (item.condition < 70) {
-                        message = currentCustomer.name + "refuse un objet de mauvaise qualité.";
-                        return;
-                    }
-                }
-                if (currentCustomer.customerType.equals("Collectionneur")) {
-                    if (item.rarety.equals("Rare")
-                            || item.rarety.equals("Epique")
-                            || item.rarety.equals("Légendaire")) {
-                        money += 20;
-                        message = currentCustomer.name + "paie un bonus pour un objet rare !";
-                    }
-                }
-                if (currentCustomer.customerType.equals("Bricoleur")) {
-                    if (item.condition < 40) {
-                        reputation += 1;
-                    }
-                }
-                money += item.salePrice;
-                sellingStock.remove(i);
-                message = "Vous avez vendu " + item.name + " à " + currentCustomer.name + " pour " + item.salePrice
-                        + "€.";
-                if (item.condition >= 70) {
-                    reputation += 5;
-                    happyCustomers++;
-                    dailyHappyCustomers++;
-                    message = currentCustomer.name + " est très satisfait de son achat !";
-                } else if (item.condition >= 40) {
-                    neutralCustomers++;
-                    dailyNeutralCustomers++;
-                    message = currentCustomer.name + " est satisfait de son achat.";
-                } else {
-                    reputation -= 5;
-                    unhappyCustomers++;
-                    dailyUnhappyCustomers++;
-                    message = currentCustomer.name + " est mécontent de son achat.";
-                }
-                dailyMoneyEarned += item.salePrice;
-                dailyItemsSold++;
-                dailyReputationChange += item.condition >= 70 ? 5 : item.condition >= 40 ? 0 : -5;
-                return;
-            }
+            sellItemToCustomer(item, i);
+            return;
+    }
+    message = currentCustomer.name + " n'a rien trouvé d'intéressant.";
+    }
+
+    private void sellItemToCustomer(Item item, int index){
+        money += item.salePrice;
+        dailyMoneyEarned += item.salePrice;
+        dailyItemsSold++;
+        if (isGoodDeal(item)){
+            reputation++;
+            dailyReputationChange++;
         }
-        message = currentCustomer.name + " n'a pas acheté d'objet aujourd'hui.";
+        if (currentCustomer.customerType.equals("Collectionneur")
+        && (item.rarety.equals("Rare")
+        || item.rarety.equals("Epique")
+        || item.rarety.equals("Légendaire"))){
+            money += 20;
+            dailyMoneyEarned += 20;
+        }
+
+        applyCustomerSatisfaction(item);
+
+        sellingStock.remove(index);
+
+        message = currentCustomer.name + " a acheté " + item.name + " pour " + item.salePrice + " euros.";
+    }
+
+    private void applyCustomerSatisfaction(Item item){
+        if (item.condition >=70){
+            reputation += 5;
+            happyCustomers++;
+            dailyHappyCustomers++;
+            dailyReputationChange += 5
+        } else if (item.condition >=40){
+            neutralCustomers++;
+            dailyNeutralCustomers++;
+        } else {
+            reputation -= 5;
+            unhappyCustomers++;
+            dailyUnhappyCustomers++;
+            dailyReputationChange -= 5;
+        }
     }
 
     private String getTypeFromName(String name) {
