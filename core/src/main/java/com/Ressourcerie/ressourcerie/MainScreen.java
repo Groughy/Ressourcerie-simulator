@@ -316,7 +316,6 @@ public class MainScreen implements Screen {
 
         for (int i = 0; i < sellingStock.size(); i++) {
             Item item = sellingStock.get(i);
-            int expectedPrice = item.value;
 
             if (!customerWantsItem(item)){
                 continue;
@@ -368,7 +367,7 @@ public class MainScreen implements Screen {
             reputation += 5;
             happyCustomers++;
             dailyHappyCustomers++;
-            dailyReputationChange += 5
+            dailyReputationChange += 5;
         } else if (item.condition >=40){
             neutralCustomers++;
             dailyNeutralCustomers++;
@@ -567,16 +566,16 @@ public class MainScreen implements Screen {
             font.draw(batch, "F1 = fermer l'aide", 100, 390);
             font.draw(batch, "F5 = Sauvegarder", 100, 360);
             font.draw(batch, "F9 = Charger", 100, 330);
-            font.draw(batch, "Haut / Bas = selectionner un objet", 100, 300);
-            font.draw(batch, "R = reparer l'objet selectionne", 100, 270);
-            font.draw(batch, "V = ouvrir le menu de mise en vente", 100, 240);
-            font.draw(batch, "S = ouvrir le stock en vente", 100, 210);
-            font.draw(batch, "B = acheter un cafe", 100, 180);
-            font.draw(batch, "T = acheter un kit de reparation", 100, 150);
-            font.draw(batch, "A = ouvrir les ateliers", 100, 120);
-            font.draw(batch, "C = faire venir un client test", 100, 90);
-            font.draw(batch, "ESPACE = rapport / jour suivant si inventaire vide", 100, 60);
-            font.draw(batch, "ECHAP = annuler certains menus", 100, 30);
+            font.draw(batch, "Haut / Bas = Selectionner un objet", 100, 300);
+            font.draw(batch, "R = Reparer l'objet selectionne", 100, 270);
+            font.draw(batch, "V = Ouvrir le menu de mise en vente", 100, 240);
+            font.draw(batch, "S = Ouvrir le stock en vente", 100, 210);
+            font.draw(batch, "B = Acheter un cafe", 100, 180);
+            font.draw(batch, "T = Acheter un kit de reparation", 100, 150);
+            font.draw(batch, "A = Ouvrir les ateliers", 100, 120);
+            font.draw(batch, "C = Faire venir un client test", 100, 90);
+            font.draw(batch, "ESPACE = Rapport / jour suivant si inventaire vide", 100, 60);
+            font.draw(batch, "ECHAP = Annuler certains menus", 100, 30);
 
             batch.end();
     }
@@ -732,6 +731,11 @@ public class MainScreen implements Screen {
                 Item selectedItem = Inventory.get(selectedIndex);
                 if (!canRepair(selectedItem)) {
                     message = "Améliore ton atelier pour faire ça. Atelier requis : " + selectedItem.type;
+                    return;
+                }
+
+                if (selectedItem.condition >= 100){
+                    message = "Cet objet est déjà entièrement réparé.";
                     return;
                 }
 
