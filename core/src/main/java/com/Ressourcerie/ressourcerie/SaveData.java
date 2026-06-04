@@ -14,8 +14,8 @@ public class SaveData{
     public int selectedIndex;
 
     public int maxInventorySize;
-    public int maxSellingWorkshopLevel;
-    
+    public int maxSellingStockSize;
+
     public int electronicWorkshopLevel;
     public int mechanicalWorkshopLevel;
     public int woodWorkshopLevel;

@@ -7,6 +7,7 @@ import java.util.Random;
 
 import com.Ressourcerie.ressourcerie.customer.Customer;
 import com.Ressourcerie.ressourcerie.items.Item;
+import com.Ressourcerie.ressourcerie.SaveData;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.files.FileHandle;
@@ -836,7 +837,7 @@ public class MainScreen implements Screen {
         Json json = new Json();
         FileHandle file = Gdx.files.local("save.json");
 
-        fils.writeString(json.prettyPrint(data), false);
+        file.writeString(json.prettyPrint(data), false);
 
         message = "Partie sauvegardée.";
     }
@@ -850,7 +851,7 @@ public class MainScreen implements Screen {
         }
 
         Json json = new Json();
-        Savedata data = json.fromJson(SaveData.class, file.readString());
+        SaveData data = json.fromJson(SaveData.class, file.readString());
 
         money = data.money;
         day = data.day;
@@ -861,13 +862,13 @@ public class MainScreen implements Screen {
         selectedIndex = data.selectedIndex;
 
         maxInventorySize = data.maxInventorySize;
-        maxSellingStock = data.maxSellingStock;
+        maxSellingStockSize = data.maxSellingStockSize;
 
         electronicWorkshopLevel = data.electronicWorkshopLevel;
         mechanicalWorkshopLevel = data.mechanicalWorkshopLevel;
-        woodWorkshopLevel = data.woodWorshopLevel;
+        woodWorkshopLevel = data.woodWorkshopLevel;
         decorationWorkshopLevel = data.decorationWorkshopLevel;
-        textileWorkshoplevel = data.textileWorkshopLevel;
+        textileWorkshopLevel = data.textileWorkshopLevel;
 
         Inventory = data.inventory;
         sellingStock = data.sellingStock;
