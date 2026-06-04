@@ -26,4 +26,7 @@ public class Item {
             condition = 100;
         }
     }
+    
+    public Item(){
+    }
 }

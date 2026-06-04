@@ -9,6 +9,8 @@ import com.Ressourcerie.ressourcerie.customer.Customer;
 import com.Ressourcerie.ressourcerie.items.Item;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -192,6 +194,7 @@ public class MainScreen implements Screen {
 
     private void nextDay() {
 
+        saveGame();
         day++;
         energy = maxEnergy;
 
@@ -231,11 +234,26 @@ public class MainScreen implements Screen {
                 "Vase ébréché", "Montre cassée", "Appareil photo vintage", "Jouet en bois", "Livre ancien" };
         String name = names[random.nextInt(names.length)];
         String type = getTypeFromName(name);
-        int conditions = random.nextInt(81) + 20;
+        int conditions;
+        if (reputation < 30){
+            conditions = random.nextInt(41) + 10;
+        }
+        else if (reputation < 70){
+            conditions = random.nextInt(61) + 20;
+        }
+        else {
+            conditions = random.nextInt(41) + 60;
+        }
         int values = random.nextInt(41) + 10;
         String rarity;
         int salePrice = values;
         int rarityRoll = random.nextInt(100);
+        if (reputation > 80){
+            rarityRoll += 10;
+        }
+        if (reputation > 95){
+            rarityRoll += 10;
+        }
         if (rarityRoll < 50) {
             rarity = "Commun";
         } else if (rarityRoll < 80) {
@@ -525,16 +543,18 @@ public class MainScreen implements Screen {
             font.draw(batch, "=== AIDE / COMMANDES ===", 100, 430);
 
             font.draw(batch, "F1 = fermer l'aide", 100, 390);
-            font.draw(batch, "Haut / Bas = selectionner un objet", 100, 360);
-            font.draw(batch, "R = reparer l'objet selectionne", 100, 330);
-            font.draw(batch, "V = ouvrir le menu de mise en vente", 100, 300);
-            font.draw(batch, "S = ouvrir le stock en vente", 100, 270);
-            font.draw(batch, "B = acheter un cafe", 100, 240);
-            font.draw(batch, "T = acheter un kit de reparation", 100, 210);
-            font.draw(batch, "A = ouvrir les ateliers", 100, 180);
-            font.draw(batch, "C = faire venir un client test", 100, 150);
-            font.draw(batch, "ESPACE = rapport / jour suivant si inventaire vide", 100, 120);
-            font.draw(batch, "ECHAP = annuler certains menus", 100, 90);
+            font.draw(batch, "F5 = Sauvegarder", 100, 360);
+            font.draw(batch, "F9 = Charger", 100, 330);
+            font.draw(batch, "Haut / Bas = selectionner un objet", 100, 300);
+            font.draw(batch, "R = reparer l'objet selectionne", 100, 270);
+            font.draw(batch, "V = ouvrir le menu de mise en vente", 100, 240);
+            font.draw(batch, "S = ouvrir le stock en vente", 100, 210);
+            font.draw(batch, "B = acheter un cafe", 100, 180);
+            font.draw(batch, "T = acheter un kit de reparation", 100, 150);
+            font.draw(batch, "A = ouvrir les ateliers", 100, 120);
+            font.draw(batch, "C = faire venir un client test", 100, 90);
+            font.draw(batch, "ESPACE = rapport / jour suivant si inventaire vide", 100, 60);
+            font.draw(batch, "ECHAP = annuler certains menus", 100, 30);
 
             batch.end();
     }
@@ -727,6 +747,14 @@ public class MainScreen implements Screen {
             showHelpMenu = !showHelpMenu;
         }
 
+        if (Gdx.input.isKeyJustPressed(Input.Keys.F5)){
+            saveGame();
+        }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.F9)){
+            loadGame();
+        }
+
         if (Gdx.input.isKeyJustPressed(Input.Keys.B)) {
             buyCoffee();
         }
@@ -779,9 +807,72 @@ public class MainScreen implements Screen {
 
             currentSalePrice = Inventory.get(selectedIndex).value;
             showSaleMenu = true;
+        }
+    }
 
+    private void saveGame(){
+        SaveData data = new SaveData();
+
+        data.money = money;
+        data.day = day;
+        data.energy = energy;
+        data.maxEnergy = maxEnergy;
+        data.reputation = reputation;
+
+        data.selectedIndex = selectedIndex;
+
+        data.maxInventorySize = maxInventorySize;
+        data.maxSellingStockSize = maxSellingStockSize;
+
+        data.electronicWorkshopLevel = electronicWorkshopLevel;
+        data.mechanicalWorkshopLevel = mechanicalWorkshopLevel;
+        data.woodWorkshopLevel = woodWorkshopLevel;
+        data.decorationWorkshopLevel = decorationWorkshopLevel;
+        data.textileWorkshopLevel = textileWorkshopLevel;
+
+        data.inventory = Inventory;
+        data.sellingStock = sellingStock;
+
+        Json json = new Json();
+        FileHandle file = Gdx.files.local("save.json");
+
+        fils.writeString(json.prettyPrint(data), false);
+
+        message = "Partie sauvegardée.";
+    }
+
+    private void loadGame(){
+        FileHandle file = Gdx.files.local("save.json");
+
+        if(!file.exists()){
+            message = "Aucune sauvegarde trouvée.";
+            return;
         }
 
+        Json json = new Json();
+        Savedata data = json.fromJson(SaveData.class, file.readString());
+
+        money = data.money;
+        day = data.day;
+        energy = data.energy;
+        maxEnergy = data.maxEnergy;
+        reputation = data.reputation;
+
+        selectedIndex = data.selectedIndex;
+
+        maxInventorySize = data.maxInventorySize;
+        maxSellingStock = data.maxSellingStock;
+
+        electronicWorkshopLevel = data.electronicWorkshopLevel;
+        mechanicalWorkshopLevel = data.mechanicalWorkshopLevel;
+        woodWorkshopLevel = data.woodWorshopLevel;
+        decorationWorkshopLevel = data.decorationWorkshopLevel;
+        textileWorkshoplevel = data.textileWorkshopLevel;
+
+        Inventory = data.inventory;
+        sellingStock = data.sellingStock;
+
+        message = "partie chargée.";
     }
 
     @Override
