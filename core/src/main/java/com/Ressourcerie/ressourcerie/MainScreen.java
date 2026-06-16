@@ -153,6 +153,7 @@ public class MainScreen implements Screen {
         font.draw(batch, "Clients ravis : " + happyCustomers, statsX, 330);
         font.draw(batch, "Clients neutres : " + neutralCustomers, statsX, 300);
         font.draw(batch, "Clients decus : " + unhappyCustomers, statsX, 270);
+        font.draw(batch, "Employes : " + employees.size(), statX, 240);
 
         font.draw(batch, "Client : " + currentCustomer.name
                 + " | Budget : " + currentCustomer.budget
@@ -199,6 +200,15 @@ public class MainScreen implements Screen {
         saveGame();
         day++;
         energy = maxEnergy;
+
+        for (Employee employee : employees){
+            for (Item item : Inventory){
+                if (item.condition < 100){
+                    item.repair(employee.skill);
+                    break;
+                }
+            }
+        }
 
         int numberOfNewItems = random.nextInt(3) + 2;
         for (int i = 0; i < numberOfNewItems; i++) {
