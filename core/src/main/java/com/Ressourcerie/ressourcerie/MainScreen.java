@@ -28,6 +28,7 @@ public class MainScreen implements Screen {
     private int maxEnergy = 100;
     private String message = "";
     private ArrayList<Item> sellingStock;
+    private ArrayList<Employee> employees;
     private Customer currentCustomer;
     private int reputation = 50;
     private int happyCustomers = 0;
@@ -67,6 +68,7 @@ public class MainScreen implements Screen {
         font = new BitmapFont();
         Inventory = new ArrayList<>();
         sellingStock = new ArrayList<>();
+        employees = new ArrayList<>();
         currentCustomer = createRandomCustomer();
 
         Inventory.add(new Item("Vieille radio", 45, 20, 20, "Commun", 10, "Electronique"));
@@ -563,7 +565,7 @@ public class MainScreen implements Screen {
 
             font.draw(batch, "=== AIDE / COMMANDES ===", 100, 430);
 
-            font.draw(batch, "F1 = fermer l'aide", 100, 390);
+            font.draw(batch, "F1 = Fermer l'aide", 100, 390);
             font.draw(batch, "F5 = Sauvegarder", 100, 360);
             font.draw(batch, "F9 = Charger", 100, 330);
             font.draw(batch, "Haut / Bas = Selectionner un objet", 100, 300);
@@ -811,6 +813,10 @@ public class MainScreen implements Screen {
             BuyFromCustomer();
         }
 
+        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_7)){
+            recruitEmployee();
+        }
+
         if (Gdx.input.isKeyJustPressed(Input.Keys.V)) {
 
             if (Inventory.isEmpty()) {
@@ -899,6 +905,24 @@ public class MainScreen implements Screen {
         sellingStock = data.sellingStock;
 
         message = "partie chargée.";
+    }
+
+    private void recruitEmployee(){
+        int cost = 200;
+
+        if (money < cost){
+            message = "Pas assez d'argent.";
+            return;
+        }
+
+        money -= cost;
+
+        Employee employee =
+            new Employee("Employe " + (employees.size() + 1), 10);
+        
+            employees.add(employee);
+
+            message = employee.name + " recrute.";
     }
 
     @Override
