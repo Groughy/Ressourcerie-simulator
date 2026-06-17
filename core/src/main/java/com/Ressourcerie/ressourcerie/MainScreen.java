@@ -1,7 +1,5 @@
 package com.Ressourcerie.ressourcerie;
 
-import com.badlogic.gdx.Screen;
-
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -9,11 +7,12 @@ import com.Ressourcerie.ressourcerie.customer.Customer;
 import com.Ressourcerie.ressourcerie.items.Item;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.utils.Json;
 
 public class MainScreen implements Screen {
 
@@ -153,7 +152,7 @@ public class MainScreen implements Screen {
         font.draw(batch, "Clients ravis : " + happyCustomers, statsX, 330);
         font.draw(batch, "Clients neutres : " + neutralCustomers, statsX, 300);
         font.draw(batch, "Clients decus : " + unhappyCustomers, statsX, 270);
-        font.draw(batch, "Employes : " + employees.size(), statX, 240);
+        font.draw(batch, "Employes : " + employees.size(), statsX, 240);
 
         font.draw(batch, "Client : " + currentCustomer.name
                 + " | Budget : " + currentCustomer.budget
@@ -208,6 +207,11 @@ public class MainScreen implements Screen {
                     break;
                 }
             }
+            money -= employee.dailySalary;
+        }
+
+        if (!employees.isEmpty()){
+            message = "Salaires payes : " + (employees.size() * 20) + " euros.";
         }
 
         int numberOfNewItems = random.nextInt(3) + 2;
@@ -928,7 +932,7 @@ public class MainScreen implements Screen {
         money -= cost;
 
         Employee employee =
-            new Employee("Employe " + (employees.size() + 1), 10);
+            new Employee("Employe " + (employees.size() + 1), 10, 20);
         
             employees.add(employee);
 
