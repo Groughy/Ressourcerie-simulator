@@ -38,6 +38,7 @@ public class MainScreen implements Screen {
     private boolean showSaleMenu = false;
     private boolean showStockMenu = false;
     private boolean showHelpMenu = false;
+    private boolean showEmployeeMenu = false;
     private int dailyMoneyEarned = 0;
     private int dailyItemsSold = 0;
     private int dailyReputationChange = 0;
@@ -582,16 +583,17 @@ public class MainScreen implements Screen {
             font.draw(batch, "F1 = Fermer l'aide", 100, 390);
             font.draw(batch, "F5 = Sauvegarder", 100, 360);
             font.draw(batch, "F9 = Charger", 100, 330);
-            font.draw(batch, "Haut / Bas = Selectionner un objet", 100, 300);
-            font.draw(batch, "R = Reparer l'objet selectionne", 100, 270);
-            font.draw(batch, "V = Ouvrir le menu de mise en vente", 100, 240);
-            font.draw(batch, "S = Ouvrir le stock en vente", 100, 210);
+            font.draw(batch, "Flèches = Selectionner un objet", 100, 300);
+            font.draw(batch, "R = Reparer", 100, 270);
+            font.draw(batch, "V = Mise en vente", 100, 240);
+            font.draw(batch, "S = Stock", 100, 210);
             font.draw(batch, "B = Acheter un cafe", 100, 180);
-            font.draw(batch, "T = Acheter un kit de reparation", 100, 150);
-            font.draw(batch, "A = Ouvrir les ateliers", 100, 120);
+            font.draw(batch, "T = Acheter un kit", 100, 150);
+            font.draw(batch, "A = Ateliers", 100, 120);
             font.draw(batch, "C = Faire venir un client test", 100, 90);
             font.draw(batch, "ESPACE = Rapport / jour suivant si inventaire vide", 100, 60);
             font.draw(batch, "ECHAP = Annuler certains menus", 100, 30);
+            font.draw(batch, "E = Ouvrir le menu des employes", 450, 390);
 
             batch.end();
     }
@@ -625,6 +627,42 @@ public class MainScreen implements Screen {
             font.draw(batch, "Appuyez sur A pour fermer ce menu.", 100, 190);
 
             batch.end();
+    }
+
+    private void renderEmployeeMenu(){
+        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)){
+            recruitEmployee();
+        }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)){
+            trainEmployee();
+        }
+
+        batch.begin();
+
+        font.draw(batch, "=== EMPLOYES ===", 100, 430);
+        font.draw(batch, "1 = Recruter un employe (200 euros)", 100, 390);
+        font.draw(batch, "2 = Former un employe (100 euros)", 100, 360);
+        font.draw(batch, "E = Fermer", 100, 330);
+
+        int y = 310;
+
+        if (employees.isEmpty()){
+            font.draw(batch, "Aucun employe recrute.", 100, y);
+        } else {
+            for (Employee employee : employees){
+                font.draw(batch, employee.name
+                        + " | Niveau : " + employee.level
+                        + " | Competence : " + employee.skill
+                        + " | Salaire journalier : " + employee.dailySalary + " euros",
+                        100,
+                        y);
+                y -= 30;
+            }
+        }
+
+        batch.end();
+        return;
     }
 
     private void renderStockMenu(){
@@ -783,6 +821,10 @@ public class MainScreen implements Screen {
             } else {
                 message = "Pas assez d'argent pour améliorer l'atelier.";
             }
+        }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.E)) {
+            showEmployeeMenu = !showEmployeeMenu;
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.F1)) {
