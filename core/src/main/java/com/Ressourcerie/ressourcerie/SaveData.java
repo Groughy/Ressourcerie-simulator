@@ -22,6 +22,11 @@ public class SaveData{
     public int decorationWorkshopLevel;
     public int textileWorkshopLevel;
 
+    public int storageLevel;
+    public int storageUpgradeCost;
+
     public ArrayList<Item> inventory;
     public ArrayList<Item> sellingStock;
+
+    public ArrayList<Employee> employees;
 }

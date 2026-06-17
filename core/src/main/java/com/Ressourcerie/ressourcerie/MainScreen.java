@@ -116,6 +116,12 @@ public class MainScreen implements Screen {
             return;
         }
 
+        if (showEmployeeMenu) {
+
+            renderEmployeeMenu();
+            return;
+        }
+
         if (Inventory.isEmpty()) {
             if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
                 dayReport = true;
@@ -230,9 +236,8 @@ public class MainScreen implements Screen {
         for (int i = 0; i < customersToday; i++) {
 
             currentCustomer = createRandomCustomer();
-
-        }
             BuyFromCustomer();
+        }
 
         selectedIndex = 0;
         dailyMoneyEarned = 0;
@@ -428,7 +433,7 @@ public class MainScreen implements Screen {
         if (item.type.equals("Mécanique")) {
             return mechanicalWorkshopLevel > 1;
         }
-        if (item.type.equals("Meuble")) {
+        if (item.type.equals("Mobilier")) {
             return woodWorkshopLevel > 1;
         }
         if (item.type.equals("Décoration") || item.type.equals("Divers")) {
@@ -635,7 +640,7 @@ public class MainScreen implements Screen {
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)){
-            trainEmployee();
+            trainEmployee(employees.get(0));
         }
 
         batch.begin();
@@ -920,6 +925,9 @@ public class MainScreen implements Screen {
 
         data.inventory = Inventory;
         data.sellingStock = sellingStock;
+        data.employees = employees;
+        data.storageLevel = storageLevel;
+        data.storageUpgradeCost = storageUpgradeCost;
 
         Json json = new Json();
         FileHandle file = Gdx.files.local("save.json");
@@ -959,6 +967,9 @@ public class MainScreen implements Screen {
 
         Inventory = data.inventory;
         sellingStock = data.sellingStock;
+        employees = data.employees;
+        storageLevel = data.storageLevel;
+        storageUpgradeCost = data.storageUpgradeCost;
 
         message = "partie chargée.";
     }

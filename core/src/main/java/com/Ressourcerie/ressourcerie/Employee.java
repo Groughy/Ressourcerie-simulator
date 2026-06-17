@@ -7,7 +7,7 @@ public class Employee {
     public int dailySalary;
     public int level;
 
-    public Employee (String name, int skill, int dailySalary, int level){
+    public Employee (String name, int skill, int dailySalary){
         this.name = name;
         this.skill = skill;
         this.dailySalary = dailySalary;
@@ -17,4 +17,6 @@ public class Employee {
     public int getRepairPower(){
         return 5 + (level * 5);
     }
+
+    public Employee(){}
 }
