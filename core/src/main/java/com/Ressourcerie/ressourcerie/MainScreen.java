@@ -203,7 +203,7 @@ public class MainScreen implements Screen {
         for (Employee employee : employees){
             for (Item item : Inventory){
                 if (item.condition < 100){
-                    item.repair(employee.skill);
+                    item.repair(employee.getRepairPower());
                     break;
                 }
             }
@@ -937,6 +937,20 @@ public class MainScreen implements Screen {
             employees.add(employee);
 
             message = employee.name + " recrute.";
+    }
+
+    private void trainEmployee(Employee employee){
+
+        int cost = 100;
+
+        if (money < cost){
+            message = "Pas assez d'argent.";
+            return;
+        }
+
+        money -= cost;
+        employee.level++;
+        message = employee.name + " entraîné.";
     }
 
     @Override
