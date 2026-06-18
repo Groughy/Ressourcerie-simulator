@@ -6,11 +6,13 @@ public class Employee {
     public int skill;
     public int dailySalary;
     public int level;
+    public String specialty;
 
-    public Employee (String name, int skill, int dailySalary){
+    public Employee (String name, int skill, int dailySalary, String specialty){
         this.name = name;
         this.skill = skill;
         this.dailySalary = dailySalary;
+        this.specialty = specialty;
         this.level = 1;
     }
 

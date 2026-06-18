@@ -211,7 +211,7 @@ public class MainScreen implements Screen {
 
         for (Employee employee : employees){
             for (Item item : Inventory){
-                if (item.condition < 100){
+                if (item.condition < 100 && item.type.equels(employee.specialty)){
                     item.repair(employee.getRepairPower());
                     break;
                 }
@@ -691,14 +691,14 @@ public class MainScreen implements Screen {
                 font.draw(batch, prefix + employee.name
                     + " | Niveau : " + employee.level
                     + " | Salaire : " + employee.dailySalary
-                    + " | Reparation : " + employee.getRepairPower(), 100, y
+                    + " | Reparation : " + employee.getRepairPower()
+                    + " | Specialite : " + employee.specialty, 100, y
                 );
 
                 y -= 30;
             }
 
         batch.end();
-
     }
 
     private void renderStockMenu(){
@@ -957,6 +957,7 @@ public class MainScreen implements Screen {
         data.inventory = Inventory;
         data.sellingStock = sellingStock;
         data.employees = employees;
+        data.selectedEmployeeIndex = selectedEmployeeIndex;
         data.storageLevel = storageLevel;
         data.storageUpgradeCost = storageUpgradeCost;
 
@@ -999,6 +1000,16 @@ public class MainScreen implements Screen {
         Inventory = data.inventory;
         sellingStock = data.sellingStock;
         employees = data.employees;
+        selectedEmployeeIndex = data.selectedEmployeeIndex
+
+        if (employees == null){
+            employees = new ArrayList<>();
+        }
+
+        if (selectedEmployeeIndex >= employees.size()){
+            selectedEmployeeIndex = 0;
+        }
+
         storageLevel = data.storageLevel;
         storageUpgradeCost = data.storageUpgradeCost;
 
@@ -1015,8 +1026,18 @@ public class MainScreen implements Screen {
 
         money -= cost;
 
+        String[] specialties = {
+            "Electronique",
+            "Mécanique",
+            "Mobilier",
+            "Décoration",
+            "Textile"
+        };
+
+        String specialty = spectialties[random.nextInt(specialties.length)];
+
         Employee employee =
-            new Employee("Employe " + (employees.size() + 1), 10, 20);
+            new Employee("Employe " + (employees.size() + 1), 10, 20, specialty);
         
             employees.add(employee);
 

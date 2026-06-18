@@ -29,4 +29,5 @@ public class SaveData{
     public ArrayList<Item> sellingStock;
 
     public ArrayList<Employee> employees;
+    public int selectedEmployeeIndex;
 }
