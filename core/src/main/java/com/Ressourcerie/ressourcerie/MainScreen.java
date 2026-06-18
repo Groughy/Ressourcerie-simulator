@@ -60,6 +60,7 @@ public class MainScreen implements Screen {
     private int maxSellingStockSize = 10;
     private int storageLevel = 1;
     private int storageUpgradeCost = 120;
+    private int selectedEmployeeIndex = 0;
 
     @Override
     public void show() {
@@ -118,6 +119,7 @@ public class MainScreen implements Screen {
 
         if (showEmployeeMenu) {
 
+            handleEmployeeMenuInput();
             renderEmployeeMenu();
             return;
         }
@@ -634,7 +636,27 @@ public class MainScreen implements Screen {
             batch.end();
     }
 
-    private void renderEmployeeMenu(){
+    private void handleEmployeeMenuInput(){
+        if (employees.isEmpty()){
+            return;
+        }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.UP)){
+            selectedEmployeeIndex--;
+
+            if (selectedEmployeeIndex < 0){
+                selectedEmployeeIndex = employees.size() -1;
+            }
+        }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)){
+            selectedEmployeeIndex++;
+
+            if (selectecEmployeeIndex >= employees.size()){
+                selectedEmployeeIndex = 0;
+            }
+        }
+
         if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)){
             recruitEmployee();
         }
@@ -642,6 +664,9 @@ public class MainScreen implements Screen {
         if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)){
             trainEmployee(employees.get(0));
         }
+    }
+
+    private void renderEmployeeMenu(){
 
         batch.begin();
 
@@ -654,20 +679,26 @@ public class MainScreen implements Screen {
 
         if (employees.isEmpty()){
             font.draw(batch, "Aucun employe recrute.", 100, y);
-        } else {
-            for (Employee employee : employees){
-                font.draw(batch, employee.name
-                        + " | Niveau : " + employee.level
-                        + " | Competence : " + employee.skill
-                        + " | Salaire journalier : " + employee.dailySalary + " euros",
-                        100,
-                        y);
+        }
+            for (int i = 0; i < employees.size(); i++){
+                Employee employee = employees.get(i);
+                String prefix = "  ";
+
+                if (i == selectedEmployeeIndex){
+                    prefix = "> ";
+                }
+
+                font.draw(batch, prefix + employee.name
+                    + " | Niveau : " + employee.level
+                    + " | Salaire : " + employee.dailySalary
+                    + " | Reparation : " + employee.getRepairPower(), 100, y
+                );
+
                 y -= 30;
             }
-        }
 
         batch.end();
-        return;
+
     }
 
     private void renderStockMenu(){
