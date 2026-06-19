@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import com.Ressourcerie.ressourcerie.customer.Customer;
+import com.Ressourcerie.ressourcerie.employees.Employee;
 import com.Ressourcerie.ressourcerie.items.Item;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;

@@ -1,4 +1,4 @@
-package com.Ressourcerie.ressourcerie;
+package com.Ressourcerie.ressourcerie.employees;
 
 public class Employee {
 

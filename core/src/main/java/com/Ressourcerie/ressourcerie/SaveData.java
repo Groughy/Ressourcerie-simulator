@@ -2,6 +2,7 @@ package com.Ressourcerie.ressourcerie;
 
 import java.util.ArrayList;
 
+import com.Ressourcerie.ressourcerie.employees.Employee;
 import com.Ressourcerie.ressourcerie.items.Item;
 
 public class SaveData{
