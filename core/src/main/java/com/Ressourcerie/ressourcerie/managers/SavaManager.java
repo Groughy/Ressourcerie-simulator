@@ -9,7 +9,7 @@ import com.badlogic.gdx.utils.Json;
 
 public class SavaManager {
 
-    private void saveGame(){
+    public void saveGame(){
         SaveData data = new SaveData();
 
         data.money = money;
@@ -44,7 +44,7 @@ public class SavaManager {
         message = "Partie sauvegardée.";
     }
 
-    private void loadGame(){
+    public void loadGame(){
         FileHandle file = Gdx.files.local("save.json");
 
         if(!file.exists()){

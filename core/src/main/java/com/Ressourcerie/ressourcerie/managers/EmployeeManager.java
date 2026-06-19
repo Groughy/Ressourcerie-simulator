@@ -2,10 +2,11 @@ package com.Ressourcerie.ressourcerie.managers;
 
 import com.Ressourcerie.ressourcerie.employees.Employee;
 import com.Ressourcerie.ressourcerie.items.Item;
+import com.Ressourcerie.ressourcerie.MainScreen;
 
 public class EmployeeManager {
 
-    private void recruitEmployee(){
+    public void recruitEmployee(){
         int cost = 200;
 
         if (money < cost){
@@ -33,7 +34,7 @@ public class EmployeeManager {
             message = employee.name + " recrute.";
     }
 
-    private void trainEmployee(Employee employee){
+    public void trainEmployee(Employee employee){
 
         int cost = 100;
 
@@ -47,7 +48,7 @@ public class EmployeeManager {
         message = employee.name + " entraîné.";
     }
 
-    private void repairEmployee(Employee employee){
+    public void repairEmployee(Employee employee){
         for (Item item : Inventory){
                 if (item.condition < 100 && item.type.equals(employee.specialty)){
                     item.repair(employee.getRepairPower());
