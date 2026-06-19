@@ -65,6 +65,7 @@ public class MainScreen implements Screen {
     private int storageLevel = 1;
     private int storageUpgradeCost = 120;
     private int selectedEmployeeIndex = 0;
+    private SaveManager saveManager;
 
     @Override
     public void show() {
@@ -839,11 +840,11 @@ public class MainScreen implements Screen {
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.F5)){
-            saveGame();
+            saveManager.saveGame();
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.F9)){
-            loadGame();
+            saveManager.loadGame();
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.B)) {
