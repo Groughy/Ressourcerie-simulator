@@ -1,9 +1,4 @@
 package com.Ressourcerie.ressourcerie;
-package com.Ressourcerie.ressourcerie.managers.SaveManager;
-package com.Ressourcerie.ressourcerie.manager.EmployeeManager;
-package com.Ressourcerie.ressourcerie.employees.Employee;
-package com.Ressourcerie.ressourcerie.customer.Customer;
-
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -11,6 +6,9 @@ import java.util.Random;
 import com.Ressourcerie.ressourcerie.customer.Customer;
 import com.Ressourcerie.ressourcerie.employees.Employee;
 import com.Ressourcerie.ressourcerie.items.Item;
+import com.Ressourcerie.ressourcerie.managers.SaveManager;
+import com.Ressourcerie.ressourcerie.managers.CustomerManager;
+import com.Ressourcerie.ressourcerie.managers.EmployeeManager;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
@@ -65,7 +63,9 @@ public class MainScreen implements Screen {
     private int storageLevel = 1;
     private int storageUpgradeCost = 120;
     private int selectedEmployeeIndex = 0;
-    private SaveManager saveManager;
+    private SaveManager saveManager = new SaveManager();
+    private CustomerManager customerManager = new CustomerManager();
+    private EmployeeManager employeeManager = new EmployeeManager();
 
     @Override
     public void show() {
@@ -75,7 +75,7 @@ public class MainScreen implements Screen {
         Inventory = new ArrayList<>();
         sellingStock = new ArrayList<>();
         employees = new ArrayList<>();
-        currentCustomer = createRandomCustomer();
+        currentCustomer = customerManager.createRandomCustomer();
 
         Inventory.add(new Item("Vieille radio", 45, 20, 20, "Commun", 10, "Electronique"));
         Inventory.add(new Item("Chaise en bois", 70, 15, 20, "Commun", 5, "Mobilier"));
@@ -210,12 +210,12 @@ public class MainScreen implements Screen {
 
     private void nextDay() {
 
-        saveGame();
+        saveManager.saveGame();
         day++;
         energy = maxEnergy;
 
         for (Employee employee : employees){
-            repairEmployee(employee);
+            employeeManager.repairEmployee(employee);
         }
 
         if (!employees.isEmpty()){
@@ -236,7 +236,7 @@ public class MainScreen implements Screen {
 
         for (int i = 0; i < customersToday; i++) {
 
-            currentCustomer = createRandomCustomer();
+            currentCustomer = customerManager.createRandomCustomer();
             BuyFromCustomer();
         }
 
@@ -624,17 +624,17 @@ public class MainScreen implements Screen {
         if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)){
             selectedEmployeeIndex++;
 
-            if (selectecEmployeeIndex >= employees.size()){
+            if (selectedEmployeeIndex >= employees.size()){
                 selectedEmployeeIndex = 0;
             }
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)){
-            recruitEmployee();
+            employeeManager.recruitEmployee();
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)){
-            trainEmployee(employees.get(0));
+            employeeManager.trainEmployee(employees.get(0));
         }
     }
 
@@ -878,7 +878,7 @@ public class MainScreen implements Screen {
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_7)){
-            recruitEmployee();
+            employeeManager.recruitEmployee();
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.V)) {

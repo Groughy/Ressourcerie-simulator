@@ -1,8 +1,21 @@
 package com.Ressourcerie.ressourcerie.managers;
 
+import java.util.Random;
+import com.Ressourcerie.ressourcerie.customer.Customer;
+
+
+
+
 public class CustomerManager {
 
-    public Customer createRandomCustomer() {
+    private Random random = new Random();
+    
+    public int reputation;
+
+
+public Customer createRandomCustomer() {
+
+
         String[] names = { "Alice", "Bob", "Charlie", "David", "Eve", "Frank", "Grace", "Heidi", "Ivan", "Judy" };
         String[] wantedItems = { "Vieille radio", "Lampe cassée", "Chaise en bois", "Vieux vélo", "Table abîmée",
                 "Ordinateur obsolète", "Télévision ancienne", "Machine à écrire", "Guitare désaccordée", "Canapé usé",

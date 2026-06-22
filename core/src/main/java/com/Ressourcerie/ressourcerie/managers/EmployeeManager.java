@@ -2,15 +2,34 @@ package com.Ressourcerie.ressourcerie.managers;
 
 import com.Ressourcerie.ressourcerie.employees.Employee;
 import com.Ressourcerie.ressourcerie.items.Item;
-import com.Ressourcerie.ressourcerie.MainScreen;
 
 public class EmployeeManager {
 
+    private int money;
+    private java.util.Random random = new java.util.Random();
+    private java.util.ArrayList<Employee> employees;
+    private java.util.List<Item> inventory;
+
+    public EmployeeManager(){
+        employees = new java.util.ArrayList<>();
+        inventory = new java.util.ArrayList<>();
+    }
+
+    public void setMoney(int money){
+        this.money = money;
+    }
+
+    public void setEmployees(java.util.ArrayList<Employee> employees){
+        this.employees = employees;
+    }
+
+    public void setInventory(java.util.List<Item> inventory){
+        this.inventory = inventory;
+    }
     public void recruitEmployee(){
         int cost = 200;
 
         if (money < cost){
-            message = "Pas assez d'argent.";
             return;
         }
 
@@ -24,14 +43,12 @@ public class EmployeeManager {
             "Textile"
         };
 
-        String specialty = spectialties[random.nextInt(specialties.length)];
+        String specialty = specialties[random.nextInt(specialties.length)];
 
         Employee employee =
             new Employee("Employe " + (employees.size() + 1), 10, 20, specialty);
         
             employees.add(employee);
-
-            message = employee.name + " recrute.";
     }
 
     public void trainEmployee(Employee employee){
@@ -39,17 +56,15 @@ public class EmployeeManager {
         int cost = 100;
 
         if (money < cost){
-            message = "Pas assez d'argent.";
             return;
         }
 
         money -= cost;
         employee.level++;
-        message = employee.name + " entraîné.";
     }
 
     public void repairEmployee(Employee employee){
-        for (Item item : Inventory){
+        for (Item item : inventory){
                 if (item.condition < 100 && item.type.equals(employee.specialty)){
                     item.repair(employee.getRepairPower());
                     break;

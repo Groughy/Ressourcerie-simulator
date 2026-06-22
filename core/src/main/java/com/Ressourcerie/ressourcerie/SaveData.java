@@ -26,7 +26,7 @@ public class SaveData{
     public int storageLevel;
     public int storageUpgradeCost;
 
-    public ArrayList<Item> inventory;
+    public ArrayList<Item> Inventory;
     public ArrayList<Item> sellingStock;
 
     public ArrayList<Employee> employees;

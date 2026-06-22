@@ -1,13 +1,41 @@
 package com.Ressourcerie.ressourcerie.managers;
-package com.Ressourcerie.ressourcerie;
 
 import java.util.ArrayList;
-
+import com.Ressourcerie.ressourcerie.SaveData;
+import com.Ressourcerie.ressourcerie.employees.Employee;
+import com.Ressourcerie.ressourcerie.items.Item;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Json;
 
 public class SaveManager {
+
+    public int money;
+    public int day;
+    public int energy;
+    public int maxEnergy;
+    public int reputation;
+
+    public int selectedIndex;
+
+    public int maxInventorySize;
+    public int maxSellingStockSize;
+
+    public int electronicWorkshopLevel;
+    public int mechanicalWorkshopLevel;
+    public int woodWorkshopLevel;
+    public int decorationWorkshopLevel;
+    public int textileWorkshopLevel;
+
+    public int storageLevel;
+    public int storageUpgradeCost;
+
+    public ArrayList<Item> Inventory;
+    public ArrayList<Item> sellingStock;
+
+    public ArrayList<Employee> employees;
+    public int selectedEmployeeIndex;
+    public String message;
 
     public void saveGame(){
         SaveData data = new SaveData();
@@ -29,7 +57,7 @@ public class SaveManager {
         data.decorationWorkshopLevel = decorationWorkshopLevel;
         data.textileWorkshopLevel = textileWorkshopLevel;
 
-        data.inventory = Inventory;
+        data.Inventory = Inventory;
         data.sellingStock = sellingStock;
         data.employees = employees;
         data.selectedEmployeeIndex = selectedEmployeeIndex;
@@ -72,7 +100,7 @@ public class SaveManager {
         decorationWorkshopLevel = data.decorationWorkshopLevel;
         textileWorkshopLevel = data.textileWorkshopLevel;
 
-        Inventory = data.inventory;
+        Inventory = data.Inventory;
         sellingStock = data.sellingStock;
         employees = data.employees;
         selectedEmployeeIndex = data.selectedEmployeeIndex;
