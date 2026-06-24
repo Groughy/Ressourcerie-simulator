@@ -92,7 +92,7 @@ public class MainScreen implements Screen {
         handleInputs();
 
         if (dayReport) {
-            if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+            if (Gdx.input.isKeyJustPressed(GameKeys.ENTER)) {
                 dayReport = false;
                 nextDay();
                 return;
@@ -131,7 +131,7 @@ public class MainScreen implements Screen {
         }
 
         if (Inventory.isEmpty()) {
-            if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+            if (Gdx.input.isKeyJustPressed(GameKeys.SPACE)) {
                 dayReport = true;
             }
         }
@@ -485,7 +485,7 @@ public class MainScreen implements Screen {
             return;
         }
 
-         if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
+         if (Gdx.input.isKeyJustPressed(GameKeys.DOWN)) {
             selectedIndex++;
 
             if (selectedIndex >= Inventory.size()) {
@@ -493,7 +493,7 @@ public class MainScreen implements Screen {
             }
         }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
+        if (Gdx.input.isKeyJustPressed(GameKeys.UP)) {
             selectedIndex--;
 
             if (selectedIndex < 0) {
@@ -614,7 +614,7 @@ public class MainScreen implements Screen {
             return;
         }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.UP)){
+        if (Gdx.input.isKeyJustPressed(GameKeys.UP)){
             selectedEmployeeIndex--;
 
             if (selectedEmployeeIndex < 0){
@@ -622,7 +622,7 @@ public class MainScreen implements Screen {
             }
         }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)){
+        if (Gdx.input.isKeyJustPressed(GameKeys.DOWN)){
             selectedEmployeeIndex++;
 
             if (selectedEmployeeIndex >= employees.size()){
@@ -736,12 +736,12 @@ public class MainScreen implements Screen {
 
             Item selectedItem = Inventory.get(selectedIndex);
 
-            if (Gdx.input.isKeyJustPressed(Input.Keys.PLUS)
-                    || Gdx.input.isKeyJustPressed(Input.Keys.EQUALS)) {
+            if (Gdx.input.isKeyJustPressed(GameKeys.PLUS)
+                    || Gdx.input.isKeyJustPressed(GameKeys.EQUALS)) {
                 currentSalePrice += 5;
             }
 
-            if (Gdx.input.isKeyJustPressed(Input.Keys.MINUS)) {
+            if (Gdx.input.isKeyJustPressed(GameKeys.MINUS)) {
                 currentSalePrice -= 5;
 
                 if (currentSalePrice < 1) {
@@ -770,7 +770,7 @@ public class MainScreen implements Screen {
                 return;
             }
 
-            if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+            if (Gdx.input.isKeyJustPressed(GameKeys.CANCEL)) {
                 showSaleMenu = false;
                 return;
             }
@@ -815,7 +815,7 @@ public class MainScreen implements Screen {
     }
 
     private void handleInputs(){
-        if (Gdx.input.isKeyJustPressed(Input.Keys.T)) {
+        if (Gdx.input.isKeyJustPressed(GameKeys.KIT)) {
             buyRepairKit();
         }
 
@@ -835,15 +835,15 @@ public class MainScreen implements Screen {
             saveManager.loadGame();
         }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.B)) {
+        if (Gdx.input.isKeyJustPressed(GameKeys.COFFEE)) {
             buyCoffee();
         }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.PLUS) || Gdx.input.isKeyJustPressed(Input.Keys.EQUALS)) {
+        if (Gdx.input.isKeyJustPressed(GameKeys.PLUS) || Gdx.input.isKeyJustPressed(GameKeys.EQUALS)) {
             currentSalePrice += 5;
         }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.MINUS)) {
+        if (Gdx.input.isKeyJustPressed(GameKeys.MINUS)) {
             currentSalePrice -= 5;
         }
 
