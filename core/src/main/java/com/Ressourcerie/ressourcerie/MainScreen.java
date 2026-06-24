@@ -51,8 +51,6 @@ public class MainScreen implements Screen {
     private int coffeeEnergyBoost = 20;
     private int coffeeCost = 10;
     private int repairBonus = 0;
-    private int workshopLevel = 1;
-    private int workshopUpgradeCost = 100;
     private int electronicWorkshopLevel = 2;
     private int woodWorkshopLevel = 2;
     private int mechanicalWorkshopLevel = 2;

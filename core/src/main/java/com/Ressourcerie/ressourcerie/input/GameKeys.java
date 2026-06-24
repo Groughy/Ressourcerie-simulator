@@ -1,6 +1,5 @@
 package com.Ressourcerie.ressourcerie.input;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 
 public class GameKeys {
