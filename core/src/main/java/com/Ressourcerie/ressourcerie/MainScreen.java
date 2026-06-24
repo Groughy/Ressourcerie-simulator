@@ -9,6 +9,7 @@ import com.Ressourcerie.ressourcerie.items.Item;
 import com.Ressourcerie.ressourcerie.managers.SaveManager;
 import com.Ressourcerie.ressourcerie.managers.CustomerManager;
 import com.Ressourcerie.ressourcerie.managers.EmployeeManager;
+import com.Ressourcerie.ressourcerie.input.GameKeys;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
@@ -818,32 +819,19 @@ public class MainScreen implements Screen {
             buyRepairKit();
         }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.U)) {
-            if (money >= workshopUpgradeCost) {
-                money -= workshopUpgradeCost;
-                workshopLevel++;
-                repairBonus += 2;
-                workshopUpgradeCost += 100;
-                message = "Vous avez amélioré votre atelier à niveau " + workshopLevel
-                        + ". Bonus de réparation augmenté de 5.";
-            } else {
-                message = "Pas assez d'argent pour améliorer l'atelier.";
-            }
-        }
-
-        if (Gdx.input.isKeyJustPressed(Input.Keys.E)) {
+        if (Gdx.input.isKeyJustPressed(GameKeys.EMPLOYEE)) {
             showEmployeeMenu = !showEmployeeMenu;
         }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.F1)) {
+        if (Gdx.input.isKeyJustPressed(GameKeys.HELP)) {
             showHelpMenu = !showHelpMenu;
         }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.F5)){
+        if (Gdx.input.isKeyJustPressed(GameKeys.SAVE)){
             saveManager.saveGame();
         }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.F9)){
+        if (Gdx.input.isKeyJustPressed(GameKeys.LOAD)){
             saveManager.loadGame();
         }
 
@@ -859,17 +847,17 @@ public class MainScreen implements Screen {
             currentSalePrice -= 5;
         }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.R)) {
+        if (Gdx.input.isKeyJustPressed(GameKeys.REPAIR)) {
 
             repairItem();
             return;
         }
 
-         if (Gdx.input.isKeyJustPressed(Input.Keys.A)) {
+         if (Gdx.input.isKeyJustPressed(GameKeys.WORKSHOP)) {
             showWorkshopMenu = !showWorkshopMenu;
         }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.S)) {
+        if (Gdx.input.isKeyJustPressed(GameKeys.STOCK)) {
             showStockMenu = !showStockMenu;
         }
 
@@ -881,7 +869,7 @@ public class MainScreen implements Screen {
             employeeManager.recruitEmployee();
         }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.V)) {
+        if (Gdx.input.isKeyJustPressed(GameKeys.SELL)) {
 
             if (Inventory.isEmpty()) {
                 message = "Aucun objet à mettre en vente.";
