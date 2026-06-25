@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import com.Ressourcerie.ressourcerie.SaveData;
 import com.Ressourcerie.ressourcerie.employees.Employee;
 import com.Ressourcerie.ressourcerie.items.Item;
+import com.Ressourcerie.ressourcerie.input.GameKeys;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Json;
@@ -36,6 +37,7 @@ public class SaveManager {
     public ArrayList<Employee> employees;
     public int selectedEmployeeIndex;
     public String message;
+    public boolean azertyMode;
 
     public void saveGame(){
         SaveData data = new SaveData();
@@ -63,6 +65,8 @@ public class SaveManager {
         data.selectedEmployeeIndex = selectedEmployeeIndex;
         data.storageLevel = storageLevel;
         data.storageUpgradeCost = storageUpgradeCost;
+
+        data.azertyMode = GameKeys.azertyMode;
 
         Json json = new Json();
         FileHandle file = Gdx.files.local("save.json");
@@ -115,6 +119,9 @@ public class SaveManager {
 
         storageLevel = data.storageLevel;
         storageUpgradeCost = data.storageUpgradeCost;
+
+        GameKeys.azertyMode = data.azertyMode;
+        GameKeys.applyKeyboardMode();
 
         message = "partie chargée.";
     }

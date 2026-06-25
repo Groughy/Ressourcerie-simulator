@@ -572,6 +572,7 @@ public class MainScreen implements Screen {
             font.draw(batch, "ESPACE = Rapport / jour suivant si inventaire vide", 100, 60);
             font.draw(batch, "ECHAP = Annuler certains menus", 100, 30);
             font.draw(batch, "E = Ouvrir le menu des employes", 450, 390);
+            font.draw(batch, "F2 = Changer le mode clavier (AZERTY / QWERTY)", 450, 360);
 
             batch.end();
     }
@@ -815,6 +816,11 @@ public class MainScreen implements Screen {
     private void handleInputs(){
         if (Gdx.input.isKeyJustPressed(GameKeys.KIT)) {
             buyRepairKit();
+        }
+
+        if (Gdx.input.isKeyJustPressed(GameKeys.AZERTYMODE)){
+            GameKeys.switchKeyboardMode();
+            message = "Mode clavier : " + (GameKeys.azertyMode ? "AZERTY" : "QWERTY");
         }
 
         if (Gdx.input.isKeyJustPressed(GameKeys.EMPLOYEE)) {

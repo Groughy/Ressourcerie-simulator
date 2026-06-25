@@ -21,4 +21,28 @@ public class GameKeys {
     public static int MINUS = Input.Keys.MINUS;
     public static int SPACE = Input.Keys.SPACE;
     public static int ENTER = Input.Keys.ENTER;
+    public static int AZERTYMODE = Input.Keys.F2;
+
+    public static boolean azertyMode = true;
+
+    public static void switchKeyboardMode(){
+        azertyMode = !azertyMode;
+        applyKeyboardMode();
+    }
+
+    public static void applyKeyboardMode(){
+        if (azertyMode){
+            REPAIR = Input.Keys.R;
+            SELL = Input.Keys.V;
+            WORKSHOP = Input.Keys.A;
+            EMPLOYEE = Input.Keys.E;
+            STOCK = Input.Keys.S;
+        } else {
+            REPAIR = Input.Keys.R;
+            SELL = Input.Keys.V;
+            WORKSHOP = Input.Keys.Q;
+            EMPLOYEE = Input.Keys.E;
+            STOCK = Input.Keys.S;
+        }
+    }
 }
