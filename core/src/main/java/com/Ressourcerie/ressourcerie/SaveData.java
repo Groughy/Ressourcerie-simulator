@@ -31,4 +31,5 @@ public class SaveData{
 
     public ArrayList<Employee> employees;
     public int selectedEmployeeIndex;
+    public boolean azertyMode;
 }
