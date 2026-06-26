@@ -6,11 +6,16 @@ import java.util.Random;
 import com.Ressourcerie.ressourcerie.customer.Customer;
 import com.Ressourcerie.ressourcerie.employees.Employee;
 import com.Ressourcerie.ressourcerie.items.Item;
+
 import com.Ressourcerie.ressourcerie.managers.SaveManager;
 import com.Ressourcerie.ressourcerie.managers.CustomerManager;
 import com.Ressourcerie.ressourcerie.managers.EmployeeManager;
+
 import com.Ressourcerie.ressourcerie.input.GameKeys;
+
 import com.Ressourcerie.ressourcerie.ui.HudRenderer;
+import com.Ressourcerie.ressourcerie.ui.InventoryRenderer;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
@@ -27,6 +32,7 @@ public class MainScreen implements Screen {
     private Texture panelLeftTexture;
     private Texture panelRightTexture;
     private HudRenderer hudRenderer;
+    private InventoryRenderer inventoryRenderer;
     private int selectedIndex = 0;
     private ArrayList<Item> Inventory;
     private int money = 100;
@@ -81,6 +87,7 @@ public class MainScreen implements Screen {
         panelLeftTexture = new Texture("ui/panel_left.png");
         panelRightTexture = new Texture("ui/panel_right.png");
         hudRenderer = new HudRenderer();
+        inventoryRenderer = new InventoryRenderer();
         Inventory = new ArrayList<>();
         sellingStock = new ArrayList<>();
         employees = new ArrayList<>();
@@ -175,29 +182,8 @@ public class MainScreen implements Screen {
 
         font.draw(batch, "Message : " + message, 40, 60);
 
-        int y = 300;
-
-        for (int i = 0; i < Inventory.size(); i++) {
-            Item item = Inventory.get(i);
-
-            String prefix = "  ";
-
-            if (i == selectedIndex) {
-                prefix = "> ";
-            }
-
-            font.draw(batch,
-                    prefix + item.name
-                            + " - Etat : " + item.condition + "%"
-                            + " - Rarete : " + item.rarety
-                            + " - Energie : " + getFinalRepairCost(item)
-                            + " - Type : " + item.type,
-                    40,
-                    y);
-
-            y -= 35;
-
-        }
+        inventoryRenderer.render(batch, font, Inventory, selectedIndex);
+        
         if (Inventory.isEmpty()) {
             font.draw(batch, "Aucun objet en stock. Appuyez sur ESPACE pour passer au jour suivant.", 100, 300);
         }
