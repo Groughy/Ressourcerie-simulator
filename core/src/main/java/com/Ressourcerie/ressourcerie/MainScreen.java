@@ -10,6 +10,7 @@ import com.Ressourcerie.ressourcerie.managers.SaveManager;
 import com.Ressourcerie.ressourcerie.managers.CustomerManager;
 import com.Ressourcerie.ressourcerie.managers.EmployeeManager;
 import com.Ressourcerie.ressourcerie.input.GameKeys;
+import com.Ressourcerie.ressourcerie.ui.HudRenderer;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
@@ -23,6 +24,9 @@ public class MainScreen implements Screen {
     private SpriteBatch batch;
     private BitmapFont font;
     private Texture backgroundTexture;
+    private Texture panelLeftTexture;
+    private Texture panelRightTexture;
+    private HudRenderer hudRenderer;
     private int selectedIndex = 0;
     private ArrayList<Item> Inventory;
     private int money = 100;
@@ -74,6 +78,9 @@ public class MainScreen implements Screen {
         batch = new SpriteBatch();
         font = new BitmapFont();
         backgroundTexture = new Texture("ui/background.png");
+        panelLeftTexture = new Texture("ui/panel_left.png");
+        panelRightTexture = new Texture("ui/panel_right.png");
+        hudRenderer = new HudRenderer();
         Inventory = new ArrayList<>();
         sellingStock = new ArrayList<>();
         employees = new ArrayList<>();
@@ -135,19 +142,7 @@ public class MainScreen implements Screen {
             if (Gdx.input.isKeyJustPressed(GameKeys.SPACE)) {
                 dayReport = true;
             }
-        }
-
-        String reputationRank;
-
-        if (reputation < 30) {
-            reputationRank = "Mauvaise";
-        } else if (reputation < 70) {
-            reputationRank = "Correcte";
-        } else if (reputation < 90) {
-            reputationRank = "Excellente";
-        } else {
-            reputationRank = "Legendaire";
-        }
+        }        
 
         if (showHelpMenu) {
 
@@ -157,15 +152,15 @@ public class MainScreen implements Screen {
 
         batch.begin();
         batch.draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        batch.draw(panelLeftTexture, 0, 80);
+        float rightX = Gdx.graphics.getWidth() - panelRightTexture.getWidth();
+        batch.draw(panelRightTexture, rightX, 80);
         font.draw(batch, "F1 = Aide | S = Stock, | A = Ateliers", 40, 450);
         font.draw(batch, message, 100, 380);
 
         int statsX = 430;
 
-        font.draw(batch, "Argent : " + money + " euros", statsX, 450);
-        font.draw(batch, "Jour : " + day, statsX, 420);
-        font.draw(batch, "Energie : " + energy + "/" + maxEnergy, statsX, 390);
-        font.draw(batch, "Reputation : " + reputation + " (" + reputationRank + ")", statsX, 360);
+        hudRenderer.render(batch, font, day, money, energy, maxEnergy, reputation);
         font.draw(batch, "Clients ravis : " + happyCustomers, statsX, 330);
         font.draw(batch, "Clients neutres : " + neutralCustomers, statsX, 300);
         font.draw(batch, "Clients decus : " + unhappyCustomers, statsX, 270);
@@ -921,7 +916,7 @@ public class MainScreen implements Screen {
     @Override
     public void dispose() {
 
-        backgroundTexture.dispose();
+        Assets.dispose();
     }
 
 }
