@@ -16,11 +16,13 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.Texture;
 
 public class MainScreen implements Screen {
 
     private SpriteBatch batch;
     private BitmapFont font;
+    private Texture backgroundTexture;
     private int selectedIndex = 0;
     private ArrayList<Item> Inventory;
     private int money = 100;
@@ -71,6 +73,7 @@ public class MainScreen implements Screen {
         random = new Random();
         batch = new SpriteBatch();
         font = new BitmapFont();
+        backgroundTexture = new Texture("ui/background.png");
         Inventory = new ArrayList<>();
         sellingStock = new ArrayList<>();
         employees = new ArrayList<>();
@@ -153,6 +156,7 @@ public class MainScreen implements Screen {
         }
 
         batch.begin();
+        batch.draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         font.draw(batch, "F1 = Aide | S = Stock, | A = Ateliers", 40, 450);
         font.draw(batch, message, 100, 380);
 
@@ -916,6 +920,8 @@ public class MainScreen implements Screen {
 
     @Override
     public void dispose() {
+
+        backgroundTexture.dispose();
     }
 
 }

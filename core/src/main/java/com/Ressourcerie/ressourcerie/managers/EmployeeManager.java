@@ -65,29 +65,26 @@ public class EmployeeManager {
 
     public void repairEmployee(Employee employee){
         for (Item item : inventory){
-                if (item.condition < 100 && item.type.equals(employee.specialty)){
-                    int failChance = 20 - (employee.level * 3);
+            if (item.condition < 100 && item.type.equals(employee.specialty)){
+                int failChance = 20 - (employee.level * 3);
 
-                    if (failChance < 5){
-                        failChance = 5;
-                    }
-
-                    if (random.nextInt(100) < failChance){
-                        item.condition -= 5;
-
-                        if (item.condition < 0){
-                            item.condition = 0;
-                        }
-
-                        message = employee.name + " a rate une reparation.";
-                    } else{
-                        item.repair(employee.getRepairPower());
-                        message = employee.name + " a reussi une reparation.";
-                    }
-                    break;
+                if (failChance < 5){
+                    failChance = 5;
                 }
+
+                if (random.nextInt(100) < failChance){
+                    item.condition -= 5;
+
+                    if (item.condition < 0){
+                        item.condition = 0;
+                    }
+                } else{
+                    item.repair(employee.getRepairPower());
+                }
+                break;
             }
-            money -= employee.dailySalary;
+        }
+        money -= employee.dailySalary;
     }
 
 }
