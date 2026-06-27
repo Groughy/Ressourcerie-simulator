@@ -17,6 +17,7 @@ import com.Ressourcerie.ressourcerie.ui.HudRenderer;
 import com.Ressourcerie.ressourcerie.ui.InventoryRenderer;
 import com.Ressourcerie.ressourcerie.ui.CustomerInfoRenderer;
 import com.Ressourcerie.ressourcerie.ui.MessageRenderer;
+import com.Ressourcerie.ressourcerie.ui.WorkshopRenderer;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -37,6 +38,7 @@ public class MainScreen implements Screen {
     private InventoryRenderer inventoryRenderer;
     private CustomerInfoRenderer customerInfoRenderer;
     private MessageRenderer messageRenderer;
+    private WorkshopRenderer workshopRenderer;
     private int selectedIndex = 0;
     private ArrayList<Item> Inventory;
     private int money = 100;
@@ -96,10 +98,12 @@ public class MainScreen implements Screen {
         inventoryRenderer = new InventoryRenderer();
         customerInfoRenderer = new CustomerInfoRenderer();
         messageRenderer = new MessageRenderer();
+        workshopRenderer = new WorkshopRenderer();
 
         Inventory = new ArrayList<>();
         sellingStock = new ArrayList<>();
         employees = new ArrayList<>();
+        
         currentCustomer = customerManager.createRandomCustomer();
 
         Inventory.add(new Item("Vieille radio", 45, 20, 20, "Commun", 10, "Electronique"));
@@ -125,7 +129,7 @@ public class MainScreen implements Screen {
 
         if (showWorkshopMenu) {
 
-            renderWorkshopMenu();
+           renderWorkshopMenu();
             return;
         }
 
@@ -589,17 +593,15 @@ public class MainScreen implements Screen {
             }
 
             batch.begin();
-
-            font.draw(batch, "=== ATELIERS ===", 100, 420);
-            font.draw(batch, "1, - Electronique niv. " + electronicWorkshopLevel, 100, 370);
-            font.draw(batch, "2, - Mécanique niv. " + mechanicalWorkshopLevel, 100, 340);
-            font.draw(batch, "3, - Mobilier niv. " + woodWorkshopLevel, 100, 310);
-            font.draw(batch, "4, - Décoration niv. " + decorationWorkshopLevel, 100, 280);
-            font.draw(batch, "5, - Textile niv. " + textileWorkshopLevel, 100, 250);
-            font.draw(batch, "Appuyez sur le numéro de l'atelier pour l'améliorer.", 100, 220);
-            font.draw(batch, "Appuyez sur A pour fermer ce menu.", 100, 190);
-
-            batch.end();
+            workshopRenderer.render(batch,
+                 font,
+                 electronicWorkshopLevel,
+                 mechanicalWorkshopLevel, 
+                 woodWorkshopLevel, 
+                 decorationWorkshopLevel, 
+                 textileWorkshopLevel);
+                 batch.end();
+            
     }
 
     private void handleEmployeeMenuInput(){
