@@ -18,6 +18,7 @@ import com.Ressourcerie.ressourcerie.ui.InventoryRenderer;
 import com.Ressourcerie.ressourcerie.ui.CustomerInfoRenderer;
 import com.Ressourcerie.ressourcerie.ui.MessageRenderer;
 import com.Ressourcerie.ressourcerie.ui.WorkshopRenderer;
+import com.Ressourcerie.ressourcerie.ui.EmployeeRenderer;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -34,11 +35,14 @@ public class MainScreen implements Screen {
     private Texture backgroundTexture;
     private Texture panelLeftTexture;
     private Texture panelRightTexture;
+
     private HudRenderer hudRenderer;
     private InventoryRenderer inventoryRenderer;
     private CustomerInfoRenderer customerInfoRenderer;
     private MessageRenderer messageRenderer;
     private WorkshopRenderer workshopRenderer;
+    private EmployeeRenderer employeeRenderer;
+    
     private int selectedIndex = 0;
     private ArrayList<Item> Inventory;
     private int money = 100;
@@ -99,7 +103,7 @@ public class MainScreen implements Screen {
         customerInfoRenderer = new CustomerInfoRenderer();
         messageRenderer = new MessageRenderer();
         workshopRenderer = new WorkshopRenderer();
-
+        employeeRenderer = new EmployeeRenderer();
         Inventory = new ArrayList<>();
         sellingStock = new ArrayList<>();
         employees = new ArrayList<>();
@@ -638,33 +642,7 @@ public class MainScreen implements Screen {
 
         batch.begin();
 
-        font.draw(batch, "=== EMPLOYES ===", 100, 430);
-        font.draw(batch, "1 = Recruter un employe (200 euros)", 100, 390);
-        font.draw(batch, "2 = Former un employe (100 euros)", 100, 360);
-        font.draw(batch, "E = Fermer", 100, 330);
-
-        int y = 310;
-
-        if (employees.isEmpty()){
-            font.draw(batch, "Aucun employe recrute.", 100, y);
-        }
-            for (int i = 0; i < employees.size(); i++){
-                Employee employee = employees.get(i);
-                String prefix = "  ";
-
-                if (i == selectedEmployeeIndex){
-                    prefix = "> ";
-                }
-
-                font.draw(batch, prefix + employee.name
-                    + " | Niveau : " + employee.level
-                    + " | Salaire : " + employee.dailySalary
-                    + " | Reparation : " + employee.getRepairPower()
-                    + " | Specialite : " + employee.specialty, 100, y
-                );
-
-                y -= 30;
-            }
+        employeeRenderer.render(batch, font, employees, selectedEmployeeIndex);
 
         batch.end();
     }
