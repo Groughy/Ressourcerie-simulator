@@ -15,6 +15,8 @@ import com.Ressourcerie.ressourcerie.input.GameKeys;
 
 import com.Ressourcerie.ressourcerie.ui.HudRenderer;
 import com.Ressourcerie.ressourcerie.ui.InventoryRenderer;
+import com.Ressourcerie.ressourcerie.ui.CustomerInfoRenderer;
+import com.Ressourcerie.ressourcerie.ui.MessageRenderer;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -33,6 +35,8 @@ public class MainScreen implements Screen {
     private Texture panelRightTexture;
     private HudRenderer hudRenderer;
     private InventoryRenderer inventoryRenderer;
+    private CustomerInfoRenderer customerInfoRenderer;
+    private MessageRenderer messageRenderer;
     private int selectedIndex = 0;
     private ArrayList<Item> Inventory;
     private int money = 100;
@@ -83,11 +87,16 @@ public class MainScreen implements Screen {
         random = new Random();
         batch = new SpriteBatch();
         font = new BitmapFont();
+
         backgroundTexture = new Texture("ui/background.png");
         panelLeftTexture = new Texture("ui/panel_left.png");
         panelRightTexture = new Texture("ui/panel_right.png");
+        
         hudRenderer = new HudRenderer();
         inventoryRenderer = new InventoryRenderer();
+        customerInfoRenderer = new CustomerInfoRenderer();
+        messageRenderer = new MessageRenderer();
+
         Inventory = new ArrayList<>();
         sellingStock = new ArrayList<>();
         employees = new ArrayList<>();
@@ -180,10 +189,10 @@ public class MainScreen implements Screen {
                 40,
                 90);
 
-        font.draw(batch, "Message : " + message, 40, 60);
-
         inventoryRenderer.render(batch, font, Inventory, selectedIndex);
-        
+        customerInfoRenderer.render(batch, font, currentCustomer);
+        messageRenderer.render(batch, font, message);
+
         if (Inventory.isEmpty()) {
             font.draw(batch, "Aucun objet en stock. Appuyez sur ESPACE pour passer au jour suivant.", 100, 300);
         }
