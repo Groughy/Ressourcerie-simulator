@@ -20,6 +20,7 @@ import com.Ressourcerie.ressourcerie.ui.MessageRenderer;
 import com.Ressourcerie.ressourcerie.ui.WorkshopRenderer;
 import com.Ressourcerie.ressourcerie.ui.EmployeeRenderer;
 import com.Ressourcerie.ressourcerie.ui.StockRenderer;
+import com.Ressourcerie.ressourcerie.ui.SaleMenuRenderer;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -44,6 +45,7 @@ public class MainScreen implements Screen {
     private WorkshopRenderer workshopRenderer;
     private EmployeeRenderer employeeRenderer;
     private StockRenderer stockRenderer;
+    private SaleMenuRenderer saleMenuRenderer;    
 
     private int selectedIndex = 0;
     private ArrayList<Item> Inventory;
@@ -107,6 +109,7 @@ public class MainScreen implements Screen {
         workshopRenderer = new WorkshopRenderer();
         employeeRenderer = new EmployeeRenderer();
         stockRenderer = new StockRenderer();
+        saleMenuRenderer = new SaleMenuRenderer();
 
         Inventory = new ArrayList<>();
         sellingStock = new ArrayList<>();
@@ -731,13 +734,7 @@ public class MainScreen implements Screen {
 
             batch.begin();
 
-            font.draw(batch, "=== MISE EN VENTE ===", 100, 420);
-            font.draw(batch, selectedItem.name, 100, 380);
-            font.draw(batch, "Valeur conseillee : " + selectedItem.value + " euros", 100, 340);
-            font.draw(batch, "Prix choisi : " + currentSalePrice + " euros", 100, 300);
-            font.draw(batch, "+ / - = modifier le prix", 100, 250);
-            font.draw(batch, "ENTREE = confirmer", 100, 220);
-            font.draw(batch, "ECHAP = annuler", 100, 190);
+            saleMenuRenderer.render(batch, font, selectedItem, currentSalePrice);
 
             batch.end(); 
     }
