@@ -19,6 +19,7 @@ import com.Ressourcerie.ressourcerie.ui.CustomerInfoRenderer;
 import com.Ressourcerie.ressourcerie.ui.MessageRenderer;
 import com.Ressourcerie.ressourcerie.ui.WorkshopRenderer;
 import com.Ressourcerie.ressourcerie.ui.EmployeeRenderer;
+import com.Ressourcerie.ressourcerie.ui.StockRenderer;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -42,7 +43,8 @@ public class MainScreen implements Screen {
     private MessageRenderer messageRenderer;
     private WorkshopRenderer workshopRenderer;
     private EmployeeRenderer employeeRenderer;
-    
+    private StockRenderer stockRenderer;
+
     private int selectedIndex = 0;
     private ArrayList<Item> Inventory;
     private int money = 100;
@@ -104,6 +106,8 @@ public class MainScreen implements Screen {
         messageRenderer = new MessageRenderer();
         workshopRenderer = new WorkshopRenderer();
         employeeRenderer = new EmployeeRenderer();
+        stockRenderer = new StockRenderer();
+
         Inventory = new ArrayList<>();
         sellingStock = new ArrayList<>();
         employees = new ArrayList<>();
@@ -648,14 +652,10 @@ public class MainScreen implements Screen {
     }
 
     private void renderStockMenu(){
-         batch.begin();
-            font.draw(batch, "=== ENTREPOT ===", 100, 430);
-            font.draw(batch, "Entrepot niveau : " + storageLevel, 100, 390);
-            font.draw(batch, "Stock réparation : " + Inventory.size() + "/" + maxInventorySize, 100, 360);
-            font.draw(batch, "Stock vente : " + sellingStock.size() + "/" + maxSellingStockSize, 100, 330);
-            font.draw(batch, "Amélioration entrepot : " + storageUpgradeCost + "euros", 100,300);
-            font.draw(batch, "6 = Améliorer entrepot", 100, 270);
-            int y = 230;
+        
+        batch.begin();
+
+            stockRenderer.render(batch, font, Inventory, sellingStock, maxInventorySize, maxSellingStockSize, storageLevel, storageUpgradeCost);
 
             if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_6)) {
                 if (money >= storageUpgradeCost) {
@@ -669,25 +669,6 @@ public class MainScreen implements Screen {
                     message = "Pas assez d'argent pour améliorer l'entrepot.";
                 }
             }
-
-            if (sellingStock.isEmpty()) {
-                font.draw(batch, "Aucun objet en vente.", 100, y);
-            } else {
-                for (Item item : sellingStock) {
-                    font.draw(batch,
-                            item.name
-                                    + " | Prix : " + item.salePrice + " euros"
-                                    + " | Etat : " + item.condition + "%"
-                                    + " | Rarete : " + item.rarety
-                                    + " | Type : " + item.type,
-                            100,
-                            y);
-
-                    y -= 30;
-                }
-            }
-
-            font.draw(batch, "S = fermer", 100, 80);
 
             batch.end();
     }
