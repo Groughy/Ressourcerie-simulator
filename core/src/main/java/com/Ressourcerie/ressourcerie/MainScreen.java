@@ -221,45 +221,23 @@ public class MainScreen implements Screen {
 
     private void nextDay() {
 
-        saveManager.saveGame();
-        day++;
         energy = maxEnergy;
 
         for (Employee employee : employees){
             employeeManager.repairEmployee(employee);
         }
 
-        if (!employees.isEmpty()){
-            message = "Salaires payes : " + (employees.size() * 20) + " euros.";
-        }
+        int salary = employeeManager.getTotalSalaries(employees);
+        money -= salary;
 
-        int numberOfNewItems = random.nextInt(3) + 2;
-        for (int i = 0; i < numberOfNewItems; i++) {
-            if (Inventory.size() < maxInventorySize) {
-                Inventory.add(createRandomItem());
-            } else {
-                message = "Votre inventaire est plein, vous ne pouvez pas accepter de nouveaux objets.";
-                break;
-            }
-        }
-
-        int customersToday = getCustomersPerDay();
-
-        for (int i = 0; i < customersToday; i++) {
-
-            currentCustomer = customerManager.createRandomCustomer();
-            BuyFromCustomer();
-        }
-
+        generateNewItems();
+        processCustomersToday();
         selectedIndex = 0;
-        dailyMoneyEarned = 0;
-        dailyItemsSold = 0;
-        dailyHappyCustomers = 0;
-        dailyNeutralCustomers = 0;
-        dailyUnhappyCustomers = 0;
-        dailyReputationChange = 0;
+        resetDailyStats();
         repairBonus = 0;
 
+        day++;
+        saveManager.saveGame();
     }
 
     private Item createRandomItem() {
@@ -834,6 +812,37 @@ public class MainScreen implements Screen {
 
             currentSalePrice = Inventory.get(selectedIndex).value;
             showSaleMenu = true;
+        }
+    }
+
+    private void resetDailyStats() {
+        dailyMoneyEarned = 0;
+        dailyItemsSold = 0;
+        dailyHappyCustomers = 0;
+        dailyNeutralCustomers = 0;
+        dailyUnhappyCustomers = 0;
+        dailyReputationChange = 0;
+    }
+
+    private void generateNewItems() {
+        int numberOfNewItems = random.nextInt(3) + 2;
+        for (int i = 0; i < numberOfNewItems; i++) {
+            if (Inventory.size() < maxInventorySize) {
+                Inventory.add(createRandomItem());
+            } else {
+                message = "Votre inventaire est plein, vous ne pouvez pas accepter de nouveaux objets.";
+                break;
+            }
+        }
+    }
+
+    private void processCustomersToday(){
+         int customersToday = getCustomersPerDay();
+
+        for (int i = 0; i < customersToday; i++) {
+
+            currentCustomer = customerManager.createRandomCustomer();
+            BuyFromCustomer();
         }
     }
 

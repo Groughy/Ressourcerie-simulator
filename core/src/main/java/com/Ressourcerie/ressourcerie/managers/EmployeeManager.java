@@ -3,6 +3,8 @@ package com.Ressourcerie.ressourcerie.managers;
 import com.Ressourcerie.ressourcerie.employees.Employee;
 import com.Ressourcerie.ressourcerie.items.Item;
 
+import java.util.ArrayList;
+
 public class EmployeeManager {
 
     private int money;
@@ -84,7 +86,14 @@ public class EmployeeManager {
                 break;
             }
         }
-        money -= employee.dailySalary;
+    }
+
+    public int getTotalSalaries(ArrayList<Employee> employees){
+        int totalSalaries = 0;
+        for (Employee employee : employees){
+            totalSalaries += employee.dailySalary;
+        }
+        return totalSalaries;
     }
 
 }
