@@ -21,6 +21,7 @@ import com.Ressourcerie.ressourcerie.ui.WorkshopRenderer;
 import com.Ressourcerie.ressourcerie.ui.EmployeeRenderer;
 import com.Ressourcerie.ressourcerie.ui.StockRenderer;
 import com.Ressourcerie.ressourcerie.ui.SaleMenuRenderer;
+import com.Ressourcerie.ressourcerie.ui.HelpRenderer;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -45,7 +46,8 @@ public class MainScreen implements Screen {
     private WorkshopRenderer workshopRenderer;
     private EmployeeRenderer employeeRenderer;
     private StockRenderer stockRenderer;
-    private SaleMenuRenderer saleMenuRenderer;    
+    private SaleMenuRenderer saleMenuRenderer;
+    private HelpRenderer helpRenderer;
 
     private int selectedIndex = 0;
     private ArrayList<Item> Inventory;
@@ -110,6 +112,7 @@ public class MainScreen implements Screen {
         employeeRenderer = new EmployeeRenderer();
         stockRenderer = new StockRenderer();
         saleMenuRenderer = new SaleMenuRenderer();
+        helpRenderer = new HelpRenderer();
 
         Inventory = new ArrayList<>();
         sellingStock = new ArrayList<>();
@@ -565,23 +568,7 @@ public class MainScreen implements Screen {
     private void renderHelpMenu(){
         batch.begin();
 
-            font.draw(batch, "=== AIDE / COMMANDES ===", 100, 430);
-
-            font.draw(batch, "F1 = Fermer l'aide", 100, 390);
-            font.draw(batch, "F5 = Sauvegarder", 100, 360);
-            font.draw(batch, "F9 = Charger", 100, 330);
-            font.draw(batch, "Flèches = Selectionner un objet", 100, 300);
-            font.draw(batch, "R = Reparer", 100, 270);
-            font.draw(batch, "V = Mise en vente", 100, 240);
-            font.draw(batch, "S = Stock", 100, 210);
-            font.draw(batch, "B = Acheter un cafe", 100, 180);
-            font.draw(batch, "T = Acheter un kit", 100, 150);
-            font.draw(batch, "A = Ateliers", 100, 120);
-            font.draw(batch, "C = Faire venir un client test", 100, 90);
-            font.draw(batch, "ESPACE = Rapport / jour suivant si inventaire vide", 100, 60);
-            font.draw(batch, "ECHAP = Annuler certains menus", 100, 30);
-            font.draw(batch, "E = Ouvrir le menu des employes", 450, 390);
-            font.draw(batch, "F2 = Changer le mode clavier (AZERTY / QWERTY)", 450, 360);
+            helpRenderer.render(batch, font);
 
             batch.end();
     }
