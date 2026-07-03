@@ -84,6 +84,8 @@ public class MainScreen implements Screen {
     private int dailySalariesPaid = 0;
     private int dailySalesRefused = 0;
     private int dailyMoneySpent = 0;
+    private int dailyProfit = 0;
+
     private int coffeeEnergyBoost = 20;
     private int coffeeCost = 10;
     private int repairBonus = 0;
@@ -240,6 +242,8 @@ public class MainScreen implements Screen {
 
         dailySalariesPaid = salaries;
         dailyMoneySpent += salaries;
+
+        dailyProfit = dailyMoneyEarned - dailyMoneySpent;
 
         
         processCustomersToday();
@@ -533,32 +537,45 @@ public class MainScreen implements Screen {
 
     private void renderDayReport(){
         batch.begin();
-
-            font.draw(batch, "Rapport du jour " + day + " : ", 100, 200);
-            font.draw(batch, "Argent gagné : " + dailyMoneyEarned + "euros", 100, 170);
-            font.draw(batch, "Objets vendus : " + dailyItemsSold, 100, 140);
+            int x = 100;
+            int y = 420;
+            int line = 35;
+            font.draw(batch, "Rapport du jour " + day + " : ", x, y);
+            y -= line;
+            font.draw(batch, "Argent gagné : " + dailyMoneyEarned + "euros", x, y);
+            y -= line;
+            font.draw(batch, "Objets vendus : " + dailyItemsSold, x, y);
+            y -= line;
             font.draw(batch,
                     "Changement de réputation : " + (dailyReputationChange >= 0 ? "+" : "") + dailyReputationChange,
-                    100, 110);
+                    x, y);
+            y -= line;
             font.draw(batch,
                     "Clients ravis : " + dailyHappyCustomers,
-                    100,
-                    320);
-
+                    x,
+                    y);
+            y -= line;
             font.draw(batch,
                     "Clients neutres : " + dailyNeutralCustomers,
-                    100,
-                    290);
-
+                    x,
+                    y);
+            y -= line;
             font.draw(batch,
                     "Clients decus : " + dailyUnhappyCustomers,
-                    100,
-                    260);
-            font.draw(batch, "Objets recus : " + dailyItemsReceived, 100, 230);
-            font.draw(batch, "Argent depense : " + dailyMoneySpent + " euros", 100, 200);
-            font.draw(batch, "Salaires payes : " + dailySalariesPaid + " euros", 100, 170);
-            font.draw(batch, "Ventes refusees : " + dailySalesRefused + " euros", 100, 140);
-            font.draw(batch, "Appuyez sur ENTRÉE pour continuer.", 100, 80);
+                    x,
+                    y);
+            y -= line;
+            font.draw(batch, "Objets recus : " + dailyItemsReceived, x, y);
+            y -= line;
+            font.draw(batch, "Argent depense : " + dailyMoneySpent + " euros", x, y);
+            y -= line;
+            font.draw(batch, "Salaires payes : " + dailySalariesPaid + " euros", x, y);
+            y -= line;
+            font.draw(batch, "Ventes refusees : " + dailySalesRefused + " euros", x, y);
+            y -= line;
+            font.draw(batch, "Bénéfice net : " + dailyProfit + " euros", x, y);
+            y -= line;
+            font.draw(batch, "Appuyez sur ENTRÉE pour continuer.", x, y);
 
             batch.end();
     }
@@ -848,6 +865,7 @@ public class MainScreen implements Screen {
         dailySalariesPaid = 0;
         dailySalesRefused = 0;
         dailyMoneySpent = 0;
+        dailyProfit = 0;
     }
 
     private void generateNewItems() {
