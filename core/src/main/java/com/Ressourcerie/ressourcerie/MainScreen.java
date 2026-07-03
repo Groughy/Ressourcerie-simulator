@@ -64,18 +64,26 @@ public class MainScreen implements Screen {
     private int happyCustomers = 0;
     private int unhappyCustomers = 0;
     private int neutralCustomers = 0;
+
     private boolean dayReport = false;
     private boolean showWorkshopMenu = false;
     private boolean showSaleMenu = false;
     private boolean showStockMenu = false;
     private boolean showHelpMenu = false;
     private boolean showEmployeeMenu = false;
+
     private int dailyMoneyEarned = 0;
     private int dailyItemsSold = 0;
     private int dailyReputationChange = 0;
     private int dailyHappyCustomers = 0;
     private int dailyNeutralCustomers = 0;
     private int dailyUnhappyCustomers = 0;
+    private int dailyItemsReceived = 0;
+    private int dailyItemsRepairedByEmployees = 0;
+    private int dailyEmployeeMistakes = 0;
+    private int dailySalariesPaid = 0;
+    private int dailySalesRefused = 0;
+    private int dailyMoneySpent = 0;
     private int coffeeEnergyBoost = 20;
     private int coffeeCost = 10;
     private int repairBonus = 0;
@@ -227,13 +235,17 @@ public class MainScreen implements Screen {
             employeeManager.repairEmployee(employee);
         }
 
-        int salary = employeeManager.getTotalSalaries(employees);
-        money -= salary;
+        int salaries = employeeManager.getTotalSalaries(employees);
+        money -= salaries;
 
-        generateNewItems();
+        dailySalariesPaid = salaries;
+        dailyMoneySpent += salaries;
+
+        
         processCustomersToday();
         selectedIndex = 0;
         resetDailyStats();
+        generateNewItems();
         repairBonus = 0;
 
         day++;
@@ -303,17 +315,21 @@ public class MainScreen implements Screen {
             Item item = sellingStock.get(i);
 
             if (!customerWantsItem(item)){
+                dailySalesRefused++;
                 continue;
             }
             if (!customerCanPay(item)){
+                dailySalesRefused++;
                 message = currentCustomer.name + " n'a pas assez d'argent.";
                 return;
             }
             if (isPriceTooHigh(item)){
+                dailySalesRefused++;
                 message = currentCustomer.name + " trouve le prix trop élevé.";
                 return;
             }
             if (currentCustomer.customerType.equals("Exigeant") && item.condition < 70){
+                dailySalesRefused++;
                 message = currentCustomer.name + " refuse d'acheter un objet en mauvais état.";
                 return;
             }
@@ -519,7 +535,7 @@ public class MainScreen implements Screen {
         batch.begin();
 
             font.draw(batch, "Rapport du jour " + day + " : ", 100, 200);
-            font.draw(batch, "Argent gagné : " + dailyMoneyEarned + "€", 100, 170);
+            font.draw(batch, "Argent gagné : " + dailyMoneyEarned + "euros", 100, 170);
             font.draw(batch, "Objets vendus : " + dailyItemsSold, 100, 140);
             font.draw(batch,
                     "Changement de réputation : " + (dailyReputationChange >= 0 ? "+" : "") + dailyReputationChange,
@@ -538,6 +554,10 @@ public class MainScreen implements Screen {
                     "Clients decus : " + dailyUnhappyCustomers,
                     100,
                     260);
+            font.draw(batch, "Objets recus : " + dailyItemsReceived, 100, 230);
+            font.draw(batch, "Argent depense : " + dailyMoneySpent + " euros", 100, 200);
+            font.draw(batch, "Salaires payes : " + dailySalariesPaid + " euros", 100, 170);
+            font.draw(batch, "Ventes refusees : " + dailySalesRefused + " euros", 100, 140);
             font.draw(batch, "Appuyez sur ENTRÉE pour continuer.", 100, 80);
 
             batch.end();
@@ -822,6 +842,12 @@ public class MainScreen implements Screen {
         dailyNeutralCustomers = 0;
         dailyUnhappyCustomers = 0;
         dailyReputationChange = 0;
+        dailyItemsReceived = 0;
+        dailyItemsRepairedByEmployees = 0;
+        dailyEmployeeMistakes = 0;
+        dailySalariesPaid = 0;
+        dailySalesRefused = 0;
+        dailyMoneySpent = 0;
     }
 
     private void generateNewItems() {
@@ -829,6 +855,7 @@ public class MainScreen implements Screen {
         for (int i = 0; i < numberOfNewItems; i++) {
             if (Inventory.size() < maxInventorySize) {
                 Inventory.add(createRandomItem());
+                dailyItemsReceived++;
             } else {
                 message = "Votre inventaire est plein, vous ne pouvez pas accepter de nouveaux objets.";
                 break;
