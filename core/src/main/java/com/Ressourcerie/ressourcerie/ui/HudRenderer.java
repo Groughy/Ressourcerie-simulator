@@ -14,10 +14,10 @@ public class HudRenderer {
         int energy,
         int maxEnergy,
         int reputation){
-            font.draw(batch, "Jour: " + day, 20, 450);
-            font.draw(batch, "Argent: " + money + "euros", 180, 450);
-            font.draw(batch, "Énergie: " + energy + "/" + maxEnergy, 380, 450);
-            font.draw(batch, "Réputation: " + reputation + " (" + ReputationManager.getReputationRank(reputation) + ")", 580, 450);
+            font.draw(batch, "Jour : " + day, 20, 450);
+            font.draw(batch, "Argent : " + money + " euros", 130, 450);
+            font.draw(batch, "Énergie : " + energy + "/" + maxEnergy, 330, 450);
+            font.draw(batch, "Réputation : " + reputation + " (" + ReputationManager.getReputationRank(reputation) + ")", 20, 425);
         }
 
 }

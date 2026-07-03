@@ -110,9 +110,10 @@ public class MainScreen implements Screen {
         batch = new SpriteBatch();
         font = new BitmapFont();
 
-        backgroundTexture = new Texture("ui/background.png");
-        panelLeftTexture = new Texture("ui/panel_left.png");
-        panelRightTexture = new Texture("ui/panel_right.png");
+        Assets.load();
+        backgroundTexture = Assets.backgroundTexture;
+        panelLeftTexture = Assets.panelLeftTexture;
+        panelRightTexture = Assets.panelRightTexture;
         
         hudRenderer = new HudRenderer();
         inventoryRenderer = new InventoryRenderer();
@@ -127,12 +128,14 @@ public class MainScreen implements Screen {
         Inventory = new ArrayList<>();
         sellingStock = new ArrayList<>();
         employees = new ArrayList<>();
-        
+
+        customerManager.reputation = reputation;
         currentCustomer = customerManager.createRandomCustomer();
 
         Inventory.add(new Item("Vieille radio", 45, 20, 20, "Commun", 10, "Electronique"));
         Inventory.add(new Item("Chaise en bois", 70, 15, 20, "Commun", 5, "Mobilier"));
         Inventory.add(new Item("Vieux vélo", 30, 50, 20, "Commun", 15, "Mécanique"));
+        dailyItemsReceived = Inventory.size();
     }
 
     @Override
@@ -140,37 +143,28 @@ public class MainScreen implements Screen {
         Gdx.gl.glClearColor(0.2f, 0.3f, 0.2f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        handleInventorySelection();
-        handleInputs();
-
         if (dayReport) {
             if (Gdx.input.isKeyJustPressed(GameKeys.ENTER)) {
-                dayReport = false;
-                nextDay();
-                return;
+                startNextDay();
+            } else {
+                renderDayReport();
             }
-        }
-
-        if (showWorkshopMenu) {
-
-           renderWorkshopMenu();
             return;
         }
 
-        if (dayReport) {
+        handleInputs();
 
-            renderDayReport();
+        if (showWorkshopMenu) {
+            renderWorkshopMenu();
             return;
         }
 
         if (showStockMenu) {
-
-           renderStockMenu();
+            renderStockMenu();
             return;
         }
 
         if (showSaleMenu) {
-
             renderSaleMenu();
             return;
         }
@@ -182,15 +176,16 @@ public class MainScreen implements Screen {
             return;
         }
 
-        if (Inventory.isEmpty()) {
-            if (Gdx.input.isKeyJustPressed(GameKeys.SPACE)) {
-                dayReport = true;
-            }
-        }        
-
         if (showHelpMenu) {
-
             renderHelpMenu();
+            return;
+        }
+
+        handleInventorySelection();
+
+        if (Inventory.isEmpty() && Gdx.input.isKeyJustPressed(GameKeys.SPACE)) {
+            endDay();
+            renderDayReport();
             return;
         }
 
@@ -199,8 +194,7 @@ public class MainScreen implements Screen {
         batch.draw(panelLeftTexture, 0, 80);
         float rightX = Gdx.graphics.getWidth() - panelRightTexture.getWidth();
         batch.draw(panelRightTexture, rightX, 80);
-        font.draw(batch, "F1 = Aide | S = Stock, | A = Ateliers", 40, 450);
-        font.draw(batch, message, 100, 380);
+        font.draw(batch, "F1 = Aide | S = Stock | A = Ateliers", 20, 475);
 
         int statsX = 430;
 
@@ -209,13 +203,6 @@ public class MainScreen implements Screen {
         font.draw(batch, "Clients neutres : " + neutralCustomers, statsX, 300);
         font.draw(batch, "Clients decus : " + unhappyCustomers, statsX, 270);
         font.draw(batch, "Employes : " + employees.size(), statsX, 240);
-
-        font.draw(batch, "Client : " + currentCustomer.name
-                + " | Budget : " + currentCustomer.budget
-                + " | Veut : " + currentCustomer.wantedItems
-                + " | Type : " + currentCustomer.customerType,
-                40,
-                90);
 
         inventoryRenderer.render(batch, font, Inventory, selectedIndex);
         customerInfoRenderer.render(batch, font, currentCustomer);
@@ -229,31 +216,38 @@ public class MainScreen implements Screen {
 
     }
 
-    private void nextDay() {
-
-        energy = maxEnergy;
-
-        for (Employee employee : employees){
-            employeeManager.repairEmployee(employee);
+    private void endDay() {
+        for (Employee employee : employees) {
+            int repairResult = employeeManager.repairEmployee(employee, Inventory);
+            if (repairResult > 0) {
+                dailyItemsRepairedByEmployees++;
+            } else if (repairResult < 0) {
+                dailyEmployeeMistakes++;
+            }
         }
 
         int salaries = employeeManager.getTotalSalaries(employees);
         money -= salaries;
-
         dailySalariesPaid = salaries;
         dailyMoneySpent += salaries;
 
-        dailyProfit = dailyMoneyEarned - dailyMoneySpent;
-
-        
         processCustomersToday();
-        selectedIndex = 0;
-        resetDailyStats();
-        generateNewItems();
-        repairBonus = 0;
+        dailyProfit = dailyMoneyEarned - dailyMoneySpent;
+        dayReport = true;
+    }
 
+    private void startNextDay() {
+        resetDailyStats();
+        energy = maxEnergy;
+        selectedIndex = 0;
+        repairBonus = 0;
         day++;
-        saveManager.saveGame();
+        generateNewItems();
+        customerManager.reputation = reputation;
+        currentCustomer = customerManager.createRandomCustomer();
+        dayReport = false;
+
+        saveGame();
     }
 
     private Item createRandomItem() {
@@ -297,7 +291,10 @@ public class MainScreen implements Screen {
     }
 
     private boolean customerWantsItem(Item item){
-        return item.name.equals(currentCustomer.wantedItems);
+        return item != null
+            && currentCustomer != null
+            && item.name != null
+            && item.name.equals(currentCustomer.wantedItems);
     }
 
     private boolean customerCanPay(Item item){
@@ -314,25 +311,28 @@ public class MainScreen implements Screen {
 
 
     private void BuyFromCustomer() {
+        if (currentCustomer == null) {
+            customerManager.reputation = reputation;
+            currentCustomer = customerManager.createRandomCustomer();
+        }
 
         for (int i = 0; i < sellingStock.size(); i++) {
             Item item = sellingStock.get(i);
 
-            if (!customerWantsItem(item)){
-                dailySalesRefused++;
+            if (!customerWantsItem(item)) {
                 continue;
             }
-            if (!customerCanPay(item)){
+            if (!customerCanPay(item)) {
                 dailySalesRefused++;
                 message = currentCustomer.name + " n'a pas assez d'argent.";
                 return;
             }
-            if (isPriceTooHigh(item)){
+            if (isPriceTooHigh(item)) {
                 dailySalesRefused++;
                 message = currentCustomer.name + " trouve le prix trop élevé.";
                 return;
             }
-            if (currentCustomer.customerType.equals("Exigeant") && item.condition < 70){
+            if ("Exigeant".equals(currentCustomer.customerType) && item.condition < 70) {
                 dailySalesRefused++;
                 message = currentCustomer.name + " refuse d'acheter un objet en mauvais état.";
                 return;
@@ -340,8 +340,10 @@ public class MainScreen implements Screen {
 
             sellItemToCustomer(item, i);
             return;
-    }
-    message = currentCustomer.name + " n'a rien trouvé d'intéressant.";
+        }
+
+        dailySalesRefused++;
+        message = currentCustomer.name + " n'a rien trouvé d'intéressant.";
     }
 
     private void sellItemToCustomer(Item item, int index){
@@ -352,10 +354,10 @@ public class MainScreen implements Screen {
             reputation++;
             dailyReputationChange++;
         }
-        if (currentCustomer.customerType.equals("Collectionneur")
-        && (item.rarety.equals("Rare")
-        || item.rarety.equals("Epique")
-        || item.rarety.equals("Légendaire"))){
+        if ("Collectionneur".equals(currentCustomer.customerType)
+                && ("Rare".equals(item.rarety)
+                || "Épique".equals(item.rarety)
+                || "Légendaire".equals(item.rarety))) {
             money += 20;
             dailyMoneyEarned += 20;
         }
@@ -382,6 +384,7 @@ public class MainScreen implements Screen {
             dailyUnhappyCustomers++;
             dailyReputationChange -= 5;
         }
+        reputation = Math.max(0, Math.min(100, reputation));
     }
 
     private String getTypeFromName(String name) {
@@ -393,14 +396,18 @@ public class MainScreen implements Screen {
             return "Electronique";
         }
         if (name.equals("Chaise en bois")
-                || name.equals("Table abîmée")
-                || name.equals("Canapé usé")) {
-            return "Meuble";
+                || name.equals("Table abîmée")) {
+            return "Mobilier";
         }
-        if (name.equals("Vieux vélo")) {
+        if (name.equals("Vieux vélo")
+                || name.equals("Machine à écrire")
+                || name.equals("Montre cassée")) {
             return "Mécanique";
         }
-        if (name.equals("Machine à écrire")
+        if (name.equals("Canapé usé")) {
+            return "Textile";
+        }
+        if (name.equals("Guitare désaccordée")
                 || name.equals("Jouet en bois")
                 || name.equals("Livre ancien")
                 || name.equals("Vase ébréché")) {
@@ -418,6 +425,9 @@ public class MainScreen implements Screen {
         }
         if (item.type.equals("Mobilier")) {
             return woodWorkshopLevel > 1;
+        }
+        if (item.type.equals("Textile")) {
+            return textileWorkshopLevel > 1;
         }
         if (item.type.equals("Décoration") || item.type.equals("Divers")) {
             return decorationWorkshopLevel > 1;
@@ -438,6 +448,7 @@ public class MainScreen implements Screen {
         }
 
         money -= cost;
+        dailyMoneySpent += cost;
         currentLevel++;
 
         message = workshopName + " amélioré niveau " + currentLevel + " !";
@@ -451,8 +462,11 @@ public class MainScreen implements Screen {
         if (item.type.equals("Mécanique")) {
             return mechanicalWorkshopLevel;
         }
-        if (item.type.equals("Meuble")) {
+        if (item.type.equals("Mobilier") || item.type.equals("Meuble")) {
             return woodWorkshopLevel;
+        }
+        if (item.type.equals("Textile")) {
+            return textileWorkshopLevel;
         }
         if (item.type.equals("Décoration") || item.type.equals("Divers")) {
             return decorationWorkshopLevel;
@@ -511,23 +525,25 @@ public class MainScreen implements Screen {
     }
 
     private void buyCoffee(){
-       
-            if (money >= coffeeCost) {
-                money -= coffeeCost;
-                energy += coffeeEnergyBoost;
-                if (energy > maxEnergy) {
-                    energy = maxEnergy;
-                }
-                message = "Vous avez bu un café. Énergie restaurée de " + coffeeEnergyBoost + ".";
-            } else {
-                message = "Pas assez d'argent pour acheter un café.";
-            }
-
+        if (energy >= maxEnergy) {
+            message = "Votre énergie est déjà au maximum.";
+            return;
+        }
+        if (money >= coffeeCost) {
+            money -= coffeeCost;
+            dailyMoneySpent += coffeeCost;
+            int restoredEnergy = Math.min(coffeeEnergyBoost, maxEnergy - energy);
+            energy += restoredEnergy;
+            message = "Vous avez bu un café. Énergie restaurée de " + restoredEnergy + ".";
+        } else {
+            message = "Pas assez d'argent pour acheter un café.";
+        }
     }
 
     private void buyRepairKit(){
         if (money >= 40) {
                 money -= 40;
+                dailyMoneySpent += 40;
                 repairBonus += 5;
                 message = "Vous avez acheté un kit de réparation. -5 energie sur les réparations d'aujourd'hui.";
             } else {
@@ -539,7 +555,7 @@ public class MainScreen implements Screen {
         batch.begin();
             int x = 100;
             int y = 420;
-            int line = 35;
+            int line = 24;
             font.draw(batch, "Rapport du jour " + day + " : ", x, y);
             y -= line;
             font.draw(batch, "Argent gagné : " + dailyMoneyEarned + "euros", x, y);
@@ -567,11 +583,15 @@ public class MainScreen implements Screen {
             y -= line;
             font.draw(batch, "Objets recus : " + dailyItemsReceived, x, y);
             y -= line;
+            font.draw(batch, "Objets repares par les employes : " + dailyItemsRepairedByEmployees, x, y);
+            y -= line;
+            font.draw(batch, "Erreurs des employes : " + dailyEmployeeMistakes, x, y);
+            y -= line;
             font.draw(batch, "Argent depense : " + dailyMoneySpent + " euros", x, y);
             y -= line;
             font.draw(batch, "Salaires payes : " + dailySalariesPaid + " euros", x, y);
             y -= line;
-            font.draw(batch, "Ventes refusees : " + dailySalesRefused + " euros", x, y);
+            font.draw(batch, "Ventes refusees : " + dailySalesRefused, x, y);
             y -= line;
             font.draw(batch, "Bénéfice net : " + dailyProfit + " euros", x, y);
             y -= line;
@@ -618,11 +638,7 @@ public class MainScreen implements Screen {
     }
 
     private void handleEmployeeMenuInput(){
-        if (employees.isEmpty()){
-            return;
-        }
-
-        if (Gdx.input.isKeyJustPressed(GameKeys.UP)){
+        if (!employees.isEmpty() && Gdx.input.isKeyJustPressed(GameKeys.UP)){
             selectedEmployeeIndex--;
 
             if (selectedEmployeeIndex < 0){
@@ -630,7 +646,7 @@ public class MainScreen implements Screen {
             }
         }
 
-        if (Gdx.input.isKeyJustPressed(GameKeys.DOWN)){
+        if (!employees.isEmpty() && Gdx.input.isKeyJustPressed(GameKeys.DOWN)){
             selectedEmployeeIndex++;
 
             if (selectedEmployeeIndex >= employees.size()){
@@ -639,11 +655,11 @@ public class MainScreen implements Screen {
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)){
-            employeeManager.recruitEmployee();
+            recruitEmployee();
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)){
-            employeeManager.trainEmployee(employees.get(0));
+            trainSelectedEmployee();
         }
     }
 
@@ -665,6 +681,7 @@ public class MainScreen implements Screen {
             if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_6)) {
                 if (money >= storageUpgradeCost) {
                     money -= storageUpgradeCost;
+                    dailyMoneySpent += storageUpgradeCost;
                     storageLevel++;
                     maxInventorySize += 5;
                     maxSellingStockSize += 5;
@@ -760,6 +777,7 @@ public class MainScreen implements Screen {
                     energy -= repairCost;
                     int repairAmount = getRepairAmount(selectedItem);
                     selectedItem.repair(repairAmount);
+                    message = selectedItem.name + " réparé à " + selectedItem.condition + "%.";
                 } else {
                     message = "Pas assez d'énergie pour réparer cet objet.";
                 }
@@ -768,6 +786,38 @@ public class MainScreen implements Screen {
     }
 
     private void handleInputs(){
+        if (showWorkshopMenu) {
+            if (Gdx.input.isKeyJustPressed(GameKeys.WORKSHOP)
+                    || Gdx.input.isKeyJustPressed(GameKeys.CANCEL)) {
+                showWorkshopMenu = false;
+            }
+            return;
+        }
+        if (showStockMenu) {
+            if (Gdx.input.isKeyJustPressed(GameKeys.STOCK)
+                    || Gdx.input.isKeyJustPressed(GameKeys.CANCEL)) {
+                showStockMenu = false;
+            }
+            return;
+        }
+        if (showEmployeeMenu) {
+            if (Gdx.input.isKeyJustPressed(GameKeys.EMPLOYEE)
+                    || Gdx.input.isKeyJustPressed(GameKeys.CANCEL)) {
+                showEmployeeMenu = false;
+            }
+            return;
+        }
+        if (showHelpMenu) {
+            if (Gdx.input.isKeyJustPressed(GameKeys.HELP)
+                    || Gdx.input.isKeyJustPressed(GameKeys.CANCEL)) {
+                showHelpMenu = false;
+            }
+            return;
+        }
+        if (showSaleMenu) {
+            return;
+        }
+
         if (Gdx.input.isKeyJustPressed(GameKeys.KIT)) {
             buyRepairKit();
         }
@@ -786,23 +836,15 @@ public class MainScreen implements Screen {
         }
 
         if (Gdx.input.isKeyJustPressed(GameKeys.SAVE)){
-            saveManager.saveGame();
+            saveGame();
         }
 
         if (Gdx.input.isKeyJustPressed(GameKeys.LOAD)){
-            saveManager.loadGame();
+            loadGame();
         }
 
         if (Gdx.input.isKeyJustPressed(GameKeys.COFFEE)) {
             buyCoffee();
-        }
-
-        if (Gdx.input.isKeyJustPressed(GameKeys.PLUS) || Gdx.input.isKeyJustPressed(GameKeys.EQUALS)) {
-            currentSalePrice += 5;
-        }
-
-        if (Gdx.input.isKeyJustPressed(GameKeys.MINUS)) {
-            currentSalePrice -= 5;
         }
 
         if (Gdx.input.isKeyJustPressed(GameKeys.REPAIR)) {
@@ -821,10 +863,8 @@ public class MainScreen implements Screen {
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.C)) {
             BuyFromCustomer();
-        }
-
-        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_7)){
-            employeeManager.recruitEmployee();
+            customerManager.reputation = reputation;
+            currentCustomer = customerManager.createRandomCustomer();
         }
 
         if (Gdx.input.isKeyJustPressed(GameKeys.SELL)) {
@@ -850,6 +890,208 @@ public class MainScreen implements Screen {
             currentSalePrice = Inventory.get(selectedIndex).value;
             showSaleMenu = true;
         }
+    }
+
+    private void recruitEmployee() {
+        if (money < EmployeeManager.RECRUITMENT_COST) {
+            message = "Pas assez d'argent pour recruter un employé.";
+            return;
+        }
+
+        money -= EmployeeManager.RECRUITMENT_COST;
+        dailyMoneySpent += EmployeeManager.RECRUITMENT_COST;
+        employees.add(employeeManager.createEmployee(employees.size() + 1));
+        selectedEmployeeIndex = employees.size() - 1;
+        message = "Nouvel employé recruté.";
+    }
+
+    private void trainSelectedEmployee() {
+        if (employees.isEmpty()) {
+            message = "Aucun employé à former.";
+            return;
+        }
+        if (money < EmployeeManager.TRAINING_COST) {
+            message = "Pas assez d'argent pour former cet employé.";
+            return;
+        }
+
+        selectedEmployeeIndex = Math.max(0, Math.min(selectedEmployeeIndex, employees.size() - 1));
+        money -= EmployeeManager.TRAINING_COST;
+        dailyMoneySpent += EmployeeManager.TRAINING_COST;
+        employeeManager.trainEmployee(employees.get(selectedEmployeeIndex));
+        message = employees.get(selectedEmployeeIndex).name + " a été formé.";
+    }
+
+    private void saveGame() {
+        SaveData data = new SaveData();
+        data.money = money;
+        data.day = day;
+        data.energy = energy;
+        data.maxEnergy = maxEnergy;
+        data.reputation = reputation;
+        data.selectedIndex = selectedIndex;
+        data.maxInventorySize = maxInventorySize;
+        data.maxSellingStockSize = maxSellingStockSize;
+        data.electronicWorkshopLevel = electronicWorkshopLevel;
+        data.mechanicalWorkshopLevel = mechanicalWorkshopLevel;
+        data.woodWorkshopLevel = woodWorkshopLevel;
+        data.decorationWorkshopLevel = decorationWorkshopLevel;
+        data.textileWorkshopLevel = textileWorkshopLevel;
+        data.storageLevel = storageLevel;
+        data.storageUpgradeCost = storageUpgradeCost;
+        data.Inventory = Inventory;
+        data.sellingStock = sellingStock;
+        data.employees = employees;
+        data.selectedEmployeeIndex = selectedEmployeeIndex;
+        data.azertyMode = GameKeys.azertyMode;
+        data.currentCustomer = currentCustomer;
+        data.happyCustomers = happyCustomers;
+        data.neutralCustomers = neutralCustomers;
+        data.unhappyCustomers = unhappyCustomers;
+        data.repairBonus = repairBonus;
+        data.dailyMoneyEarned = dailyMoneyEarned;
+        data.dailyItemsSold = dailyItemsSold;
+        data.dailyReputationChange = dailyReputationChange;
+        data.dailyHappyCustomers = dailyHappyCustomers;
+        data.dailyNeutralCustomers = dailyNeutralCustomers;
+        data.dailyUnhappyCustomers = dailyUnhappyCustomers;
+        data.dailyItemsReceived = dailyItemsReceived;
+        data.dailyItemsRepairedByEmployees = dailyItemsRepairedByEmployees;
+        data.dailyEmployeeMistakes = dailyEmployeeMistakes;
+        data.dailySalariesPaid = dailySalariesPaid;
+        data.dailySalesRefused = dailySalesRefused;
+        data.dailyMoneySpent = dailyMoneySpent;
+        data.dailyProfit = dailyProfit;
+
+        saveManager.saveGame(data);
+        message = saveManager.getMessage();
+    }
+
+    private void loadGame() {
+        SaveData data = saveManager.loadGame();
+        if (data == null) {
+            message = saveManager.getMessage();
+            return;
+        }
+
+        money = data.money;
+        day = Math.max(1, data.day);
+        maxEnergy = data.maxEnergy > 0 ? data.maxEnergy : 100;
+        energy = Math.max(0, Math.min(data.energy, maxEnergy));
+        reputation = Math.max(0, Math.min(100, data.reputation));
+        maxInventorySize = data.maxInventorySize > 0 ? data.maxInventorySize : 10;
+        maxSellingStockSize = data.maxSellingStockSize > 0 ? data.maxSellingStockSize : 10;
+        electronicWorkshopLevel = Math.max(0, data.electronicWorkshopLevel);
+        mechanicalWorkshopLevel = Math.max(0, data.mechanicalWorkshopLevel);
+        woodWorkshopLevel = Math.max(0, data.woodWorkshopLevel);
+        decorationWorkshopLevel = Math.max(0, data.decorationWorkshopLevel);
+        textileWorkshopLevel = Math.max(0, data.textileWorkshopLevel);
+        storageLevel = data.storageLevel > 0 ? data.storageLevel : 1;
+        storageUpgradeCost = data.storageUpgradeCost > 0 ? data.storageUpgradeCost : 120;
+
+        Inventory = data.Inventory != null ? data.Inventory : new ArrayList<>();
+        sellingStock = data.sellingStock != null ? data.sellingStock : new ArrayList<>();
+        employees = data.employees != null ? data.employees : new ArrayList<>();
+        normalizeLoadedItems(Inventory);
+        normalizeLoadedItems(sellingStock);
+        normalizeLoadedEmployees();
+        maxInventorySize = Math.max(maxInventorySize, Inventory.size());
+        maxSellingStockSize = Math.max(maxSellingStockSize, sellingStock.size());
+
+        selectedIndex = Inventory.isEmpty()
+            ? 0
+            : Math.max(0, Math.min(data.selectedIndex, Inventory.size() - 1));
+        selectedEmployeeIndex = employees.isEmpty()
+            ? 0
+            : Math.max(0, Math.min(data.selectedEmployeeIndex, employees.size() - 1));
+
+        currentCustomer = data.currentCustomer;
+        if (currentCustomer == null) {
+            customerManager.reputation = reputation;
+            currentCustomer = customerManager.createRandomCustomer();
+        } else {
+            if (currentCustomer.name == null || currentCustomer.name.isEmpty()) {
+                currentCustomer.name = "Client";
+            }
+            currentCustomer.budget = Math.max(0, currentCustomer.budget);
+            if (currentCustomer.wantedItems == null) {
+                currentCustomer.wantedItems = "";
+            }
+            if (currentCustomer.customerType == null || currentCustomer.customerType.isEmpty()) {
+                currentCustomer.customerType = "Normal";
+            }
+        }
+
+        happyCustomers = Math.max(0, data.happyCustomers);
+        neutralCustomers = Math.max(0, data.neutralCustomers);
+        unhappyCustomers = Math.max(0, data.unhappyCustomers);
+        repairBonus = Math.max(0, data.repairBonus);
+        dailyMoneyEarned = data.dailyMoneyEarned;
+        dailyItemsSold = Math.max(0, data.dailyItemsSold);
+        dailyReputationChange = data.dailyReputationChange;
+        dailyHappyCustomers = Math.max(0, data.dailyHappyCustomers);
+        dailyNeutralCustomers = Math.max(0, data.dailyNeutralCustomers);
+        dailyUnhappyCustomers = Math.max(0, data.dailyUnhappyCustomers);
+        dailyItemsReceived = Math.max(0, data.dailyItemsReceived);
+        dailyItemsRepairedByEmployees = Math.max(0, data.dailyItemsRepairedByEmployees);
+        dailyEmployeeMistakes = Math.max(0, data.dailyEmployeeMistakes);
+        dailySalariesPaid = Math.max(0, data.dailySalariesPaid);
+        dailySalesRefused = Math.max(0, data.dailySalesRefused);
+        dailyMoneySpent = Math.max(0, data.dailyMoneySpent);
+        dailyProfit = data.dailyProfit;
+
+        GameKeys.azertyMode = data.azertyMode;
+        GameKeys.applyKeyboardMode();
+        closeAllMenus();
+        message = saveManager.getMessage();
+    }
+
+    private void normalizeLoadedItems(ArrayList<Item> items) {
+        items.removeIf(item -> item == null);
+        for (Item item : items) {
+            item.condition = Math.max(0, Math.min(100, item.condition));
+            item.value = Math.max(1, item.value);
+            item.salePrice = Math.max(1, item.salePrice);
+            item.energyCost = Math.max(1, item.energyCost);
+            if (item.rarety == null || item.rarety.isEmpty()) {
+                item.rarety = "Commun";
+            } else if ("Epique".equals(item.rarety)) {
+                item.rarety = "Épique";
+            }
+            if ("Meuble".equals(item.type)) {
+                item.type = "Mobilier";
+            } else if (item.type == null || item.type.isEmpty()) {
+                item.type = item.name == null ? "Divers" : getTypeFromName(item.name);
+            }
+        }
+    }
+
+    private void normalizeLoadedEmployees() {
+        employees.removeIf(employee -> employee == null);
+        for (int i = 0; i < employees.size(); i++) {
+            Employee employee = employees.get(i);
+            if (employee.name == null || employee.name.isEmpty()) {
+                employee.name = "Employé " + (i + 1);
+            }
+            employee.level = Math.max(1, employee.level);
+            employee.skill = Math.max(0, employee.skill);
+            employee.dailySalary = Math.max(0, employee.dailySalary);
+            if ("Meuble".equals(employee.specialty)) {
+                employee.specialty = "Mobilier";
+            }
+            if (employee.specialty == null || employee.specialty.isEmpty()) {
+                employee.specialty = "Décoration";
+            }
+        }
+    }
+
+    private void closeAllMenus() {
+        dayReport = false;
+        showWorkshopMenu = false;
+        showSaleMenu = false;
+        showStockMenu = false;
+        showHelpMenu = false;
+        showEmployeeMenu = false;
     }
 
     private void resetDailyStats() {
@@ -885,7 +1127,7 @@ public class MainScreen implements Screen {
          int customersToday = getCustomersPerDay();
 
         for (int i = 0; i < customersToday; i++) {
-
+            customerManager.reputation = reputation;
             currentCustomer = customerManager.createRandomCustomer();
             BuyFromCustomer();
         }
@@ -909,7 +1151,12 @@ public class MainScreen implements Screen {
 
     @Override
     public void dispose() {
-
+        if (batch != null) {
+            batch.dispose();
+        }
+        if (font != null) {
+            font.dispose();
+        }
         Assets.dispose();
     }
 

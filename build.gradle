@@ -50,7 +50,9 @@ configure(subprojects) {
   processResources.dependsOn 'generateAssetList'
 
   compileJava {
-    options.incremental = true
+    // Incremental compilation loses sibling source dependencies in some Gradle
+    // environments, producing false "package does not exist" errors.
+    options.incremental = false
   }
 }
 

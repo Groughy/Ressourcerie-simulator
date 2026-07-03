@@ -11,8 +11,8 @@ public class EmployeeRenderer {
     public void render(SpriteBatch batch, BitmapFont font, ArrayList<Employee> employees, int selectedIndex) {
         font.draw(batch, "=== EMPLOYES ===", 100, 430);
         
-        font.draw(batch, "1 - Recruter un employe", 100, 390);
-        font.draw(batch, "2 = Former un employe", 100, 360);
+        font.draw(batch, "1 - Recruter un employe (200 euros)", 100, 390);
+        font.draw(batch, "2 = Former l'employe selectionne (100 euros)", 100, 360);
         font.draw(batch, "E = Fermer", 100, 330);
 
         int y = 280;

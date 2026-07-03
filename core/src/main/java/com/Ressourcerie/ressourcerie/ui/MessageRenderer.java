@@ -9,7 +9,7 @@ public class MessageRenderer {
         if (message == null || message.isEmpty()){
             return;
         }
-        font.draw(batch, message, 40, 40);
+        font.draw(batch, message, 40, 390);
     }
 
 }

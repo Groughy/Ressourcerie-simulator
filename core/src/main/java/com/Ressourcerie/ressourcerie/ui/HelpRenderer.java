@@ -13,6 +13,7 @@ public class HelpRenderer {
             font.draw(batch, "S = Stock", 100, 320);
             font.draw(batch, "A = Ateliers", 100, 290);
             font.draw(batch, "E = Employes", 100, 260);
+            font.draw(batch, "C = Accueillir le client", 100, 230);
 
             font.draw(batch, "B = Cafe", 450, 380);
             font.draw(batch, "T = Kit outils", 450, 350);

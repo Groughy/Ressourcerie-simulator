@@ -14,4 +14,6 @@ public class Customer {
         this.customerType = customerType;
     }
 
+    public Customer() {
+    }
 }

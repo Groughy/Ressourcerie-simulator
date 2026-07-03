@@ -1,130 +1,63 @@
 package com.Ressourcerie.ressourcerie.managers;
 
-import java.util.ArrayList;
 import com.Ressourcerie.ressourcerie.SaveData;
-import com.Ressourcerie.ressourcerie.employees.Employee;
-import com.Ressourcerie.ressourcerie.items.Item;
-import com.Ressourcerie.ressourcerie.input.GameKeys;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Json;
 
 public class SaveManager {
 
-    public int money;
-    public int day;
-    public int energy;
-    public int maxEnergy;
-    public int reputation;
+    private static final String SAVE_FILE_NAME = "save.json";
+    private String message = "";
 
-    public int selectedIndex;
+    public boolean saveGame(SaveData data) {
+        if (data == null) {
+            message = "Impossible de sauvegarder une partie vide.";
+            return false;
+        }
 
-    public int maxInventorySize;
-    public int maxSellingStockSize;
-
-    public int electronicWorkshopLevel;
-    public int mechanicalWorkshopLevel;
-    public int woodWorkshopLevel;
-    public int decorationWorkshopLevel;
-    public int textileWorkshopLevel;
-
-    public int storageLevel;
-    public int storageUpgradeCost;
-
-    public ArrayList<Item> Inventory;
-    public ArrayList<Item> sellingStock;
-
-    public ArrayList<Employee> employees;
-    public int selectedEmployeeIndex;
-    public String message;
-    public boolean azertyMode;
-
-    public void saveGame(){
-        SaveData data = new SaveData();
-
-        data.money = money;
-        data.day = day;
-        data.energy = energy;
-        data.maxEnergy = maxEnergy;
-        data.reputation = reputation;
-
-        data.selectedIndex = selectedIndex;
-
-        data.maxInventorySize = maxInventorySize;
-        data.maxSellingStockSize = maxSellingStockSize;
-
-        data.electronicWorkshopLevel = electronicWorkshopLevel;
-        data.mechanicalWorkshopLevel = mechanicalWorkshopLevel;
-        data.woodWorkshopLevel = woodWorkshopLevel;
-        data.decorationWorkshopLevel = decorationWorkshopLevel;
-        data.textileWorkshopLevel = textileWorkshopLevel;
-
-        data.Inventory = Inventory;
-        data.sellingStock = sellingStock;
-        data.employees = employees;
-        data.selectedEmployeeIndex = selectedEmployeeIndex;
-        data.storageLevel = storageLevel;
-        data.storageUpgradeCost = storageUpgradeCost;
-
-        data.azertyMode = GameKeys.azertyMode;
-
-        Json json = new Json();
-        FileHandle file = Gdx.files.local("save.json");
-
-        file.writeString(json.prettyPrint(data), false);
-
-        message = "Partie sauvegardée.";
+        try {
+            Json json = new Json();
+            FileHandle file = Gdx.files.local(SAVE_FILE_NAME);
+            file.writeString(json.prettyPrint(data), false, "UTF-8");
+            message = "Partie sauvegardée.";
+            return true;
+        } catch (RuntimeException exception) {
+            message = "Échec de la sauvegarde : " + exception.getMessage();
+            return false;
+        }
     }
 
-    public void loadGame(){
-        FileHandle file = Gdx.files.local("save.json");
+    public SaveData loadGame() {
+        FileHandle file = Gdx.files.local(SAVE_FILE_NAME);
 
-        if(!file.exists()){
+        if (!file.exists()) {
             message = "Aucune sauvegarde trouvée.";
-            return;
+            return null;
         }
 
-        Json json = new Json();
-        SaveData data = json.fromJson(SaveData.class, file.readString());
+        try {
+            Json json = new Json();
+            String contents = file.readString("UTF-8");
+            if (!contents.contains("\"day\"") || !contents.contains("\"money\"")) {
+                message = "La sauvegarde est vide ou incomplète.";
+                return null;
+            }
 
-        money = data.money;
-        day = data.day;
-        energy = data.energy;
-        maxEnergy = data.maxEnergy;
-        reputation = data.reputation;
-
-        selectedIndex = data.selectedIndex;
-
-        maxInventorySize = data.maxInventorySize;
-        maxSellingStockSize = data.maxSellingStockSize;
-
-        electronicWorkshopLevel = data.electronicWorkshopLevel;
-        mechanicalWorkshopLevel = data.mechanicalWorkshopLevel;
-        woodWorkshopLevel = data.woodWorkshopLevel;
-        decorationWorkshopLevel = data.decorationWorkshopLevel;
-        textileWorkshopLevel = data.textileWorkshopLevel;
-
-        Inventory = data.Inventory;
-        sellingStock = data.sellingStock;
-        employees = data.employees;
-        selectedEmployeeIndex = data.selectedEmployeeIndex;
-
-        if (employees == null){
-            employees = new ArrayList<>();
+            SaveData data = json.fromJson(SaveData.class, contents);
+            if (data == null) {
+                message = "La sauvegarde est vide ou invalide.";
+                return null;
+            }
+            message = "Partie chargée.";
+            return data;
+        } catch (RuntimeException exception) {
+            message = "Sauvegarde illisible : " + exception.getMessage();
+            return null;
         }
-
-        if (selectedEmployeeIndex >= employees.size()){
-            selectedEmployeeIndex = 0;
-        }
-
-        storageLevel = data.storageLevel;
-        storageUpgradeCost = data.storageUpgradeCost;
-
-        GameKeys.azertyMode = data.azertyMode;
-        GameKeys.applyKeyboardMode();
-
-        message = "partie chargée.";
     }
 
-
+    public String getMessage() {
+        return message;
+    }
 }

@@ -10,7 +10,7 @@ public class ReputationManager {
         } else if (reputation < 90) {
             return "Excellente";
         } else {
-            return "Legendaire";
+            return "Légendaire";
         }
     }
 

@@ -11,10 +11,10 @@ public class CustomerInfoRenderer {
             return;
         }
 
-        font.draw(batch, "Client : " + customer.name, 40, 120);
-        font.draw(batch, "Budget : " + customer.budget + " euros", 40, 90);
-        font.draw(batch, "Recherche : " + customer.wantedItems, 40, 60);
-        font.draw(batch, "Type : " + customer.customerType, 40, 30);
+        font.draw(batch, "Client : " + customer.name, 430, 200);
+        font.draw(batch, "Budget : " + customer.budget + " euros", 430, 175);
+        font.draw(batch, "Recherche : " + customer.wantedItems, 430, 150);
+        font.draw(batch, "Type : " + customer.customerType, 430, 125);
     }
 
 }

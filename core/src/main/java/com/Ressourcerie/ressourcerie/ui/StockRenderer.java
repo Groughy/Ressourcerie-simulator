@@ -2,8 +2,10 @@ package com.Ressourcerie.ressourcerie.ui;
 
 import java.util.ArrayList;
 
+import com.Ressourcerie.ressourcerie.Assets;
 import com.Ressourcerie.ressourcerie.items.Item;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 
@@ -36,15 +38,17 @@ public class StockRenderer {
         }
 
         for (Item item : sellingStock){
+            Texture icon = Assets.getIconForType(item.type);
+            batch.draw(icon, 100, y - 16, 18, 18);
             font.draw(batch,
                 item.name
                 + " | Prix : " + item.salePrice
                 + " | Etat : " + item.condition + "%"
                 + " | Rarete : " + item.rarety
                 + " | Type : " + item.type,
-                100, y
+                124, y
             );
-            y -= 30;
+            y -= 20;
         }
     }
 

@@ -20,11 +20,7 @@ public class Item {
         this.type = type;
     }
     public void repair(int amount) {
-        condition += amount;
-
-        if(condition > 100) {
-            condition = 100;
-        }
+        condition = Math.max(0, Math.min(100, condition + amount));
     }
     
     public Item(){
