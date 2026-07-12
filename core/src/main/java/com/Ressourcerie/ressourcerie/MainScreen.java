@@ -22,6 +22,7 @@ import com.Ressourcerie.ressourcerie.ui.EmployeeRenderer;
 import com.Ressourcerie.ressourcerie.ui.StockRenderer;
 import com.Ressourcerie.ressourcerie.ui.SaleMenuRenderer;
 import com.Ressourcerie.ressourcerie.ui.HelpRenderer;
+import com.Ressourcerie.ressourcerie.ui.DayReportRenderer;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -48,6 +49,8 @@ public class MainScreen implements Screen {
     private StockRenderer stockRenderer;
     private SaleMenuRenderer saleMenuRenderer;
     private HelpRenderer helpRenderer;
+    private DayReportRenderer dayReportRenderer;
+
 
     private int selectedIndex = 0;
     private ArrayList<Item> Inventory;
@@ -124,6 +127,7 @@ public class MainScreen implements Screen {
         stockRenderer = new StockRenderer();
         saleMenuRenderer = new SaleMenuRenderer();
         helpRenderer = new HelpRenderer();
+        dayReportRenderer = new DayReportRenderer();
 
         Inventory = new ArrayList<>();
         sellingStock = new ArrayList<>();
@@ -144,11 +148,20 @@ public class MainScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         if (dayReport) {
-            if (Gdx.input.isKeyJustPressed(GameKeys.ENTER)) {
+            batch.begin();
+
+            dayReportRenderer.render(batch, font, day, dailyMoneyEarned, dailyMoneySpent, dailyItemsSold,
+                    dailyItemsReceived, dailyHappyCustomers, dailyNeutralCustomers, dailyUnhappyCustomers,
+                    dailySalesRefused, dailySalariesPaid, dailyReputationChange);
+
+
+            
+            batch.end();
+
+            if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
                 startNextDay();
-            } else {
-                renderDayReport();
             }
+            
             return;
         }
 

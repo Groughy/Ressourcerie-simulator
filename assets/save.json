@@ -1,1 +1,73 @@
-{}
+{
+money: 100
+day: 2
+energy: 100
+maxEnergy: 100
+reputation: 50
+maxInventorySize: 10
+maxSellingStockSize: 10
+electronicWorkshopLevel: 2
+mechanicalWorkshopLevel: 2
+woodWorkshopLevel: 2
+decorationWorkshopLevel: 1
+storageLevel: 1
+storageUpgradeCost: 120
+Inventory: [
+	{
+		name: Lampe cassée
+		condition: 68
+		value: 39
+		salePrice: 39
+		rarety: Rare
+		energyCost: 23
+		type: Electronique
+	}
+	{
+		name: Livre ancien
+		condition: 40
+		value: 50
+		salePrice: 50
+		rarety: Légendaire
+		energyCost: 9
+		type: Décoration
+	}
+]
+sellingStock: [
+	{
+		name: Vieille radio
+		condition: 45
+		value: 20
+		salePrice: 20
+		rarety: Commun
+		energyCost: 10
+		type: Electronique
+	}
+	{
+		name: Chaise en bois
+		condition: 70
+		value: 15
+		salePrice: 15
+		rarety: Commun
+		energyCost: 5
+		type: Mobilier
+	}
+	{
+		name: Vieux vélo
+		condition: 30
+		value: 50
+		salePrice: 50
+		rarety: Commun
+		energyCost: 15
+		type: Mécanique
+	}
+]
+employees: []
+azertyMode: true
+currentCustomer: {
+	name: Heidi
+	budget: 128
+	wantedItems: Lampe cassée
+	customerType: Bricoleur
+}
+dailyItemsReceived: 2
+}
