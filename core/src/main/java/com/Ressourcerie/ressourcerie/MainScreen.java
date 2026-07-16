@@ -699,9 +699,9 @@ public class MainScreen implements Screen {
                     money -= storageUpgradeCost;
                     dailyMoneySpent += storageUpgradeCost;
                     storageLevel++;
-                    maxInventorySize += 5;
-                    maxSellingStockSize += 5;
-                    storageUpgradeCost += 120;
+                    maxInventorySize += GameBalance.STORAGE_GAIN_CAPACITY;
+                    maxSellingStockSize += GameBalance.STORAGE_GAIN_CAPACITY;
+                    storageUpgradeCost += GameBalance.STORAGE_UPGRADE_COST;
                     message = "Entrepot amélioré à niveau " + storageLevel + " ! Capacité augmentée.";
                 } else {
                     message = "Pas assez d'argent pour améliorer l'entrepot.";
