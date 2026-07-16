@@ -10,6 +10,7 @@ import com.Ressourcerie.ressourcerie.items.Item;
 import com.Ressourcerie.ressourcerie.managers.SaveManager;
 import com.Ressourcerie.ressourcerie.managers.CustomerManager;
 import com.Ressourcerie.ressourcerie.managers.EmployeeManager;
+import com.Ressourcerie.ressourcerie.managers.ItemManager;
 
 import com.Ressourcerie.ressourcerie.config.GameBalance;
 
@@ -52,6 +53,8 @@ public class MainScreen implements Screen {
     private SaleMenuRenderer saleMenuRenderer;
     private HelpRenderer helpRenderer;
     private DayReportRenderer dayReportRenderer;
+
+    private ItemManager itemManager;
 
 
     private int selectedIndex = 0;
@@ -131,6 +134,8 @@ public class MainScreen implements Screen {
         saleMenuRenderer = new SaleMenuRenderer();
         helpRenderer = new HelpRenderer();
         dayReportRenderer = new DayReportRenderer();
+
+        itemManager = new ItemManager();
 
         Inventory = new ArrayList<>();
         sellingStock = new ArrayList<>();
@@ -266,46 +271,6 @@ public class MainScreen implements Screen {
         saveGame();
     }
 
-    private Item createRandomItem() {
-        String[] names = { "Vieille radio", "Lampe cassée", "Chaise en bois", "Vieux vélo", "Table abîmée",
-                "Ordinateur obsolète", "Télévision ancienne", "Machine à écrire", "Guitare désaccordée", "Canapé usé",
-                "Vase ébréché", "Montre cassée", "Appareil photo vintage", "Jouet en bois", "Livre ancien" };
-        String name = names[random.nextInt(names.length)];
-        String type = getTypeFromName(name);
-        int conditions;
-        if (reputation < GameBalance.BAD_REPUTATION_THRESHOLD){
-            conditions = random.nextInt(41) + 10;
-        }
-        else if (reputation < GameBalance.GOOD_REPUTATION_THRESHOLD){
-            conditions = random.nextInt(61) + 20;
-        }
-        else {
-            conditions = random.nextInt(41) + 60;
-        }
-        int values = random.nextInt(41) + 10;
-        String rarity;
-        int salePrice = values;
-        int rarityRoll = random.nextInt(100);
-        if (reputation > 80){
-            rarityRoll += 10;
-        }
-        if (reputation > GameBalance.EXCELLENT_REPUTATION_THRESHOLD){
-            rarityRoll += 10;
-        }
-        if (rarityRoll < 50) {
-            rarity = "Commun";
-        } else if (rarityRoll < 80) {
-            rarity = "Rare";
-        } else if (rarityRoll < 95) {
-            rarity = "Épique";
-        } else {
-            rarity = "Légendaire";
-        }
-
-        int energyCost = random.nextInt(21) + 5; //
-        return new Item(name, conditions, values, salePrice, rarity, energyCost, type);
-    }
-
     private boolean customerWantsItem(Item item){
         return item != null
             && currentCustomer != null
@@ -401,35 +366,6 @@ public class MainScreen implements Screen {
             dailyReputationChange -= GameBalance.UNHAPPY_REPUTATION_LOSS;
         }
         reputation = Math.max(0, Math.min(100, reputation));
-    }
-
-    private String getTypeFromName(String name) {
-        if (name.equals("Vieille radio")
-                || name.equals("Lampe cassée")
-                || name.equals("Ordinateur obsolète")
-                || name.equals("Télévision ancienne")
-                || name.equals("Appareil photo vintage")) {
-            return "Electronique";
-        }
-        if (name.equals("Chaise en bois")
-                || name.equals("Table abîmée")) {
-            return "Mobilier";
-        }
-        if (name.equals("Vieux vélo")
-                || name.equals("Machine à écrire")
-                || name.equals("Montre cassée")) {
-            return "Mécanique";
-        }
-        if (name.equals("Canapé usé")) {
-            return "Textile";
-        }
-        if (name.equals("Guitare désaccordée")
-                || name.equals("Jouet en bois")
-                || name.equals("Livre ancien")
-                || name.equals("Vase ébréché")) {
-            return "Décoration";
-        }
-        return "Divers";
     }
 
     private boolean canRepair(Item item) {
@@ -1077,7 +1013,7 @@ public class MainScreen implements Screen {
             if ("Meuble".equals(item.type)) {
                 item.type = "Mobilier";
             } else if (item.type == null || item.type.isEmpty()) {
-                item.type = item.name == null ? "Divers" : getTypeFromName(item.name);
+                item.type = item.name == null ? "Divers" : itemManager.getTypeFromName(item.name);
             }
         }
     }
@@ -1130,7 +1066,7 @@ public class MainScreen implements Screen {
         int numberOfNewItems = random.nextInt(GameBalance.NEW_ITEMS_RANDOM_RANGE) + GameBalance.MIN_NEW_ITEMS_PER_DAY;
         for (int i = 0; i < numberOfNewItems; i++) {
             if (Inventory.size() < maxInventorySize) {
-                Inventory.add(createRandomItem());
+                Inventory.add(itemManager.createRandomItem());
                 dailyItemsReceived++;
             } else {
                 message = "Votre inventaire est plein, vous ne pouvez pas accepter de nouveaux objets.";
