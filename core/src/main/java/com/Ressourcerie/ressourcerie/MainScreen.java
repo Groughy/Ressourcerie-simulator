@@ -273,10 +273,10 @@ public class MainScreen implements Screen {
         String name = names[random.nextInt(names.length)];
         String type = getTypeFromName(name);
         int conditions;
-        if (reputation < 30){
+        if (reputation < GameBalance.BAD_REPUTATION_THRESHOLD){
             conditions = random.nextInt(41) + 10;
         }
-        else if (reputation < 70){
+        else if (reputation < GameBalance.GOOD_REPUTATION_THRESHOLD){
             conditions = random.nextInt(61) + 20;
         }
         else {
@@ -289,7 +289,7 @@ public class MainScreen implements Screen {
         if (reputation > 80){
             rarityRoll += 10;
         }
-        if (reputation > 95){
+        if (reputation > GameBalance.EXCELLENT_REPUTATION_THRESHOLD){
             rarityRoll += 10;
         }
         if (rarityRoll < 50) {
@@ -318,11 +318,11 @@ public class MainScreen implements Screen {
     }
 
     private boolean isPriceTooHigh(Item item){
-        return item.salePrice > item.value * 1.5;
+        return item.salePrice > item.value * GameBalance.MAX_ACCEPTABLE_PRICE_MULTIPLIER;
     }
 
     private boolean isGoodDeal(Item item){
-        return item.salePrice < item.value * 0.8;
+        return item.salePrice < item.value * GameBalance.GOOD_DEAL_PRICE_MULTIPLIER;
     }
 
 
@@ -374,8 +374,8 @@ public class MainScreen implements Screen {
                 && ("Rare".equals(item.rarety)
                 || "Épique".equals(item.rarety)
                 || "Légendaire".equals(item.rarety))) {
-            money += 20;
-            dailyMoneyEarned += 20;
+            money += GameBalance.COLLECTER_BONUS;
+            dailyMoneyEarned += GameBalance.COLLECTER_BONUS;
         }
 
         applyCustomerSatisfaction(item);
@@ -387,18 +387,18 @@ public class MainScreen implements Screen {
 
     private void applyCustomerSatisfaction(Item item){
         if (item.condition >=70){
-            reputation += 5;
+            reputation += GameBalance.HAPPY_REPUTATION_GAIN;
             happyCustomers++;
             dailyHappyCustomers++;
-            dailyReputationChange += 5;
+            dailyReputationChange += GameBalance.HAPPY_REPUTATION_GAIN;
         } else if (item.condition >=40){
             neutralCustomers++;
             dailyNeutralCustomers++;
         } else {
-            reputation -= 5;
+            reputation -= GameBalance.UNHAPPY_REPUTATION_LOSS;
             unhappyCustomers++;
             dailyUnhappyCustomers++;
-            dailyReputationChange -= 5;
+            dailyReputationChange -= GameBalance.UNHAPPY_REPUTATION_LOSS;
         }
         reputation = Math.max(0, Math.min(100, reputation));
     }
@@ -506,11 +506,11 @@ public class MainScreen implements Screen {
     }
 
     private int getCustomersPerDay() {
-        if (reputation < 30) {
+        if (reputation < GameBalance.BAD_REPUTATION_THRESHOLD) {
             return 1;
-        } else if (reputation < 60) {
+        } else if (reputation < GameBalance.GOOD_REPUTATION_THRESHOLD) {
             return 2;
-        } else if (reputation < 90) {
+        } else if (reputation < GameBalance.EXCELLENT_REPUTATION_THRESHOLD) {
             return 3;
         } else {
             return 4;

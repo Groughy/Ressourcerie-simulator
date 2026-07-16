@@ -3,6 +3,8 @@ package com.Ressourcerie.ressourcerie.managers;
 import java.util.Random;
 import com.Ressourcerie.ressourcerie.customer.Customer;
 
+import com.Ressourcerie.ressourcerie.config.GameBalance;
+
 
 
 
@@ -21,7 +23,7 @@ public Customer createRandomCustomer() {
                 "Ordinateur obsolète", "Télévision ancienne", "Machine à écrire", "Guitare désaccordée", "Canapé usé",
                 "Vase ébréché", "Montre cassée", "Appareil photo vintage", "Jouet en bois", "Livre ancien" };
         String name = names[random.nextInt(names.length)];
-        int budget = random.nextInt(201) + 50;
+        int budget = random.nextInt(GameBalance.CUSTOMER_BUDGET_RANGE) + GameBalance.MIN_CUSTOMER_BUDGET;
         String wantedItem = wantedItems[random.nextInt(wantedItems.length)];
         String[] customerTypes = {
                 "Normal",

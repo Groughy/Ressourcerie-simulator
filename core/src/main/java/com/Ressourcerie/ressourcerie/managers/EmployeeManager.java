@@ -42,14 +42,14 @@ public class EmployeeManager {
                     && item.condition < 100
                     && employee.specialty != null
                     && employee.specialty.equals(item.type)) {
-                int failChance = 20 - (employee.level * 3);
+                int failChance = GameBalance.EMPLOYEE_BASE_FAIL_CHANCE - (employee.level * GameBalance.EMPLOYEE_FAIL_REDUCTION_PER_LEVEL);
 
-                if (failChance < 5) {
-                    failChance = 5;
+                if (failChance < GameBalance.EMPLOYEE_MIN_FAIL_CHANCE) {
+                    failChance = GameBalance.EMPLOYEE_MIN_FAIL_CHANCE;
                 }
 
                 if (random.nextInt(100) < failChance) {
-                    item.condition -= 5;
+                    item.condition -= GameBalance.EMPLOYEE_FAILURE_DAMAGE;
 
                     if (item.condition < 0) {
                         item.condition = 0;
