@@ -57,6 +57,6 @@ public final class GameBalance {
     public static final float MAX_ACCEPTABLE_PRICE_MULTIPLIER = 1.5f;
     public static final float GOOD_DEAL_PRICE_MULTIPLIER = 0.8f;
 
-    public static final int COLLECTER_BONUS = 20;
+    public static final int COLLECTOR_BONUS = 20;
 
 }

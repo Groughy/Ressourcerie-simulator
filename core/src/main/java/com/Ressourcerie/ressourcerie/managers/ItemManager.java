@@ -5,7 +5,6 @@ import java.util.Random;
 
 import com.Ressourcerie.ressourcerie.items.Item;
 import com.Ressourcerie.ressourcerie.config.GameBalance;
-import com.Ressourcerie.ressourcerie.MainScreen;
 
 
 public class ItemManager {
@@ -82,14 +81,9 @@ public class ItemManager {
         return "Divers";
     }
 
-    public int getFinalRepairCost(Item item, int repairBonus) {
-        int workshopLevel = MainScreen.getWorkshopLevelForItem(item);
-        int workshopBonus = workshopLevel - 1;
-        int finalCost = item.energyCost - repairBonus - workshopBonus;
-        if (finalCost < 1) {
-            finalCost = 1;
-        }
-        return finalCost;
-    }
+    public int getFinalRepairCost(Item item, int totalBonus) {
 
+    return Math.max(GameBalance.MIN_REPAIR_COST, item.energyCost - totalBonus);
+
+    }
 }

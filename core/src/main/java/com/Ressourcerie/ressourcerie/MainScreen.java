@@ -97,7 +97,7 @@ public class MainScreen implements Screen {
     private int coffeeEnergyBoost = GameBalance.COFFEE_ENERGY_BOOST;
     private int coffeeCost = GameBalance.COFFEE_COST;
     private int repairKitCost = GameBalance.REPAIR_KIT_COST;
-    private int repairBonus = GameBalance.REPAIR_KIT_BONUS;
+    private int repairBonus = 0;
     private int electronicWorkshopLevel = 2;
     private int woodWorkshopLevel = 2;
     private int mechanicalWorkshopLevel = 2;
@@ -339,8 +339,8 @@ public class MainScreen implements Screen {
                 && ("Rare".equals(item.rarety)
                 || "Épique".equals(item.rarety)
                 || "Légendaire".equals(item.rarety))) {
-            money += GameBalance.COLLECTER_BONUS;
-            dailyMoneyEarned += GameBalance.COLLECTER_BONUS;
+            money += GameBalance.COLLECTOR_BONUS;
+            dailyMoneyEarned += GameBalance.COLLECTOR_BONUS;
         }
 
         applyCustomerSatisfaction(item);
@@ -428,7 +428,7 @@ public class MainScreen implements Screen {
 
     private int getRepairAmount(Item item) {
         int workshopLevel = getWorkshopLevelForItem(item);
-        return 5 + (workshopLevel * 5);
+        return GameBalance.BASE_REPAIR_AMOUNT + Math.max(0, workshopLevel - 1) * GameBalance.REPAIR_AMOUNT_PER_WORKSHOP_LEVEL;
     }
 
     private int getCustomersPerDay() {
@@ -483,10 +483,10 @@ public class MainScreen implements Screen {
     }
 
     private void buyRepairKit(){
-        if (money >= 40) {
-                money -= repairKitCost;
-                dailyMoneySpent += repairKitCost;
-                repairBonus += repairBonus;
+        if (money >= GameBalance.REPAIR_KIT_COST) {
+                money -= GameBalance.REPAIR_KIT_COST;
+                dailyMoneySpent += GameBalance.REPAIR_KIT_COST;
+                repairBonus += GameBalance.REPAIR_KIT_BONUS;
                 message = "Vous avez acheté un kit de réparation. -5 energie sur les réparations d'aujourd'hui.";
             } else {
                 message = "Pas assez d'argent pour acheter un kit de réparation.";
@@ -714,15 +714,19 @@ public class MainScreen implements Screen {
                     return;
                 }
 
-                int repairCost = getFinalRepairCost(selectedItem);
-                if (energy >= repairCost) {
-                    energy -= repairCost;
-                    int repairAmount = getRepairAmount(selectedItem);
-                    selectedItem.repair(repairAmount);
-                    message = selectedItem.name + " réparé à " + selectedItem.condition + "%.";
-                } else {
+                int workshopLevel = getWorkshopLevelForItem(selectedItem);
+                int totalBonus = repairBonus + Math.max(0, workshopLevel - 1);
+                
+                int repairCost = itemManager.getFinalRepairCost(selectedItem, totalBonus);
+                if (energy < repairCost) {
                     message = "Pas assez d'énergie pour réparer cet objet.";
+                    return;
                 }
+                energy -= repairCost;
+                int repairAmount = getRepairAmount(selectedItem);
+                selectedItem.repair(repairAmount);
+
+                message = selectedItem.name + " réparé de " + repairAmount + ". Condition actuelle : " + selectedItem.condition + "%.";
 
             }
     }
