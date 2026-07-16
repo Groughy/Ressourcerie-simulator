@@ -86,4 +86,47 @@ public class ItemManager {
     return Math.max(GameBalance.MIN_REPAIR_COST, item.energyCost - totalBonus);
 
     }
+
+    public boolean moveToSellingStock(Item item, ArrayList<Item> inventory, ArrayList<Item> sellingStock, int salePrice, int maxSellingStockSize) {
+        
+        if (item == null
+            || inventory == null
+            || sellingStock == null
+            || item.salePrice < 1){
+                return false;
+            }
+
+        if (!inventory.contains(item)) {
+            return false;
+        }
+        
+        if (sellingStock.size() >= maxSellingStockSize) {
+            return false;
+        }
+        
+        item.salePrice = salePrice;
+        sellingStock.add(item);
+        inventory.remove(item);
+        return true;
+    }
+
+    public boolean isFullyRepaired(Item item) {
+        return item.condition >= 100;
+    }
+
+    public boolean canBeSold(Item item, ArrayList<Item> sellingStock, int maxSellingStockSize, int salePrice){
+        if (item == null) {
+            return false;
+        }
+        if (sellingStock.size() >= maxSellingStockSize) {
+            return false;
+        }
+        if (sellingStock.contains(item)) {
+            return false;
+        }
+        if (salePrice <= 0) {
+            return false;
+        }
+        return true;
+    }
 }

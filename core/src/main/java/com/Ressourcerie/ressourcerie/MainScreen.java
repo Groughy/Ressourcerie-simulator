@@ -637,68 +637,78 @@ public class MainScreen implements Screen {
             batch.end();
     }
 
-    private void renderSaleMenu(){
-        if (Inventory.isEmpty()) {
-                showSaleMenu = false;
-                message = "Aucun objet a mettre en vente.";
-                return;
-            }
-
-            if (selectedIndex >= Inventory.size()) {
-                selectedIndex = Inventory.size() - 1;
-            }
-
-            if (selectedIndex < 0) {
-                selectedIndex = 0;
-            }
-
-            Item selectedItem = Inventory.get(selectedIndex);
-
-            if (Gdx.input.isKeyJustPressed(GameKeys.PLUS)
-                    || Gdx.input.isKeyJustPressed(GameKeys.EQUALS)) {
-                currentSalePrice += 5;
-            }
-
-            if (Gdx.input.isKeyJustPressed(GameKeys.MINUS)) {
-                currentSalePrice -= 5;
-
-                if (currentSalePrice < 1) {
-                    currentSalePrice = 1;
-                }
-            }
-
-            if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
-
-                selectedItem.salePrice = currentSalePrice;
-
-                sellingStock.add(selectedItem);
-                Inventory.remove(selectedIndex);
-
-                if (selectedIndex >= Inventory.size()) {
-                    selectedIndex = Inventory.size() - 1;
-                }
-
-                if (selectedIndex < 0) {
-                    selectedIndex = 0;
-                }
-
-                showSaleMenu = false;
-                message = "Objet mis en vente.";
-
-                return;
-            }
-
-            if (Gdx.input.isKeyJustPressed(GameKeys.CANCEL)) {
-                showSaleMenu = false;
-                return;
-            }
-
-            batch.begin();
-
-            saleMenuRenderer.render(batch, font, selectedItem, currentSalePrice);
-
-            batch.end(); 
+    private void renderSaleMenu() {
+    if (Inventory.isEmpty()) {
+        showSaleMenu = false;
+        message = "Aucun objet à mettre en vente.";
+        return;
     }
+
+    selectedIndex = Math.max(
+            0,
+            Math.min(selectedIndex, Inventory.size() - 1)
+    );
+
+    Item selectedItem = Inventory.get(selectedIndex);
+
+    if (Gdx.input.isKeyJustPressed(GameKeys.PLUS)
+            || Gdx.input.isKeyJustPressed(GameKeys.EQUALS)) {
+        currentSalePrice += 5;
+    }
+
+    if (Gdx.input.isKeyJustPressed(GameKeys.MINUS)) {
+        currentSalePrice = Math.max(1, currentSalePrice - 5);
+    }
+
+    if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+
+        if (sellingStock.size() >= maxSellingStockSize) {
+            message = "Le stock de vente est plein.";
+            showSaleMenu = false;
+            return;
+        }
+
+        boolean moved = itemManager.moveToSellingStock(
+                selectedItem,
+                Inventory,
+                sellingStock,
+                currentSalePrice,
+                maxSellingStockSize
+        );
+
+        if (!moved) {
+            message = "Impossible de mettre cet objet en vente.";
+            return;
+        }
+
+        if (Inventory.isEmpty()) {
+            selectedIndex = 0;
+        } else {
+            selectedIndex = Math.min(
+                    selectedIndex,
+                    Inventory.size() - 1
+            );
+        }
+
+        showSaleMenu = false;
+        message = "Objet mis en vente.";
+        return;
+    }
+
+    if (Gdx.input.isKeyJustPressed(GameKeys.CANCEL)) {
+        showSaleMenu = false;
+        return;
+    }
+
+    batch.begin();
+    saleMenuRenderer.render(
+            batch,
+            font,
+            selectedItem,
+            currentSalePrice
+    );
+    batch.end();
+}
 
     private void repairItem(){
         if (!Inventory.isEmpty()) {
@@ -709,7 +719,7 @@ public class MainScreen implements Screen {
                     return;
                 }
 
-                if (selectedItem.condition >= 100){
+                if (itemManager.isFullyRepaired(selectedItem)) {
                     message = "Cet objet est déjà entièrement réparé.";
                     return;
                 }
