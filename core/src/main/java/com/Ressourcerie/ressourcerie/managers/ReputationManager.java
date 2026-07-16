@@ -9,7 +9,7 @@ public class ReputationManager {
             return "Mauvaise";
         } else if (reputation < GameBalance.GOOD_REPUTATION_THRESHOLD) {
             return "Correcte";
-        } else if (reputation < GameBalance.EXCELLENTE_REPUTATION_THRESHOLD) {
+        } else if (reputation < GameBalance.EXCELLENT_REPUTATION_THRESHOLD) {
             return "Excellente";
         } else {
             return "Légendaire";

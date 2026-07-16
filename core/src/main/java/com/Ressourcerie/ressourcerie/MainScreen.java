@@ -699,8 +699,8 @@ public class MainScreen implements Screen {
                     money -= storageUpgradeCost;
                     dailyMoneySpent += storageUpgradeCost;
                     storageLevel++;
-                    maxInventorySize += GameBalance.STORAGE_GAIN_CAPACITY;
-                    maxSellingStockSize += GameBalance.STORAGE_GAIN_CAPACITY;
+                    maxInventorySize += GameBalance.STORAGE_CAPACITY_GAIN;
+                    maxSellingStockSize += GameBalance.STORAGE_CAPACITY_GAIN;
                     storageUpgradeCost += GameBalance.STORAGE_UPGRADE_COST;
                     message = "Entrepot amélioré à niveau " + storageLevel + " ! Capacité augmentée.";
                 } else {
@@ -1127,7 +1127,7 @@ public class MainScreen implements Screen {
     }
 
     private void generateNewItems() {
-        int numberOfNewItems = random.nextInt(3) + 2;
+        int numberOfNewItems = random.nextInt(GameBalance.NEW_ITEMS_RANDOM_RANGE) + GameBalance.MIN_NEW_ITEMS_PER_DAY;
         for (int i = 0; i < numberOfNewItems; i++) {
             if (Inventory.size() < maxInventorySize) {
                 Inventory.add(createRandomItem());

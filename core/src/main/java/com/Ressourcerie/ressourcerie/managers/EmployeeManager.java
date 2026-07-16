@@ -22,7 +22,7 @@ public class EmployeeManager {
         };
 
         String specialty = specialties[random.nextInt(specialties.length)];
-        return new Employee("Employé " + employeeNumber, 10, 20, specialty);
+        return new Employee("Employé " + employeeNumber, 10, GameBalance.EMPLOYEE_BASE_SALARY, specialty);
     }
 
     public void trainEmployee(Employee employee) {
