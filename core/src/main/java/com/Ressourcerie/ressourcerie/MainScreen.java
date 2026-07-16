@@ -426,16 +426,6 @@ public class MainScreen implements Screen {
         return 0;
     }
 
-    private int getFinalRepairCost(Item item) {
-        int workshopLevel = getWorkshopLevelForItem(item);
-        int workshopBonus = workshopLevel - 1;
-        int finalCost = item.energyCost - repairBonus - workshopBonus;
-        if (finalCost < 1) {
-            finalCost = 1;
-        }
-        return finalCost;
-    }
-
     private int getRepairAmount(Item item) {
         int workshopLevel = getWorkshopLevelForItem(item);
         return 5 + (workshopLevel * 5);
