@@ -11,6 +11,8 @@ import com.Ressourcerie.ressourcerie.managers.SaveManager;
 import com.Ressourcerie.ressourcerie.managers.CustomerManager;
 import com.Ressourcerie.ressourcerie.managers.EmployeeManager;
 
+import com.Ressourcerie.ressourcerie.config.GameBalance;
+
 import com.Ressourcerie.ressourcerie.input.GameKeys;
 
 import com.Ressourcerie.ressourcerie.ui.HudRenderer;
@@ -54,16 +56,16 @@ public class MainScreen implements Screen {
 
     private int selectedIndex = 0;
     private ArrayList<Item> Inventory;
-    private int money = 100;
+    private int money = GameBalance.STARTING_MONEY;
     private int day = 1;
     private Random random = new Random();
-    private int energy = 100;
-    private int maxEnergy = 100;
+    private int energy = GameBalance.MAX_ENERGY;
+    private int maxEnergy = GameBalance.MAX_ENERGY;
     private String message = "";
     private ArrayList<Item> sellingStock;
     private ArrayList<Employee> employees;
     private Customer currentCustomer;
-    private int reputation = 50;
+    private int reputation = GameBalance.STARTING_REPUTATION;
     private int happyCustomers = 0;
     private int unhappyCustomers = 0;
     private int neutralCustomers = 0;
@@ -89,19 +91,20 @@ public class MainScreen implements Screen {
     private int dailyMoneySpent = 0;
     private int dailyProfit = 0;
 
-    private int coffeeEnergyBoost = 20;
-    private int coffeeCost = 10;
-    private int repairBonus = 0;
+    private int coffeeEnergyBoost = GameBalance.COFFEE_ENERGY_BOOST;
+    private int coffeeCost = GameBalance.COFFEE_COST;
+    private int repairKitCost = GameBalance.REPAIR_KIT_COST;
+    private int repairBonus = GameBalance.REPAIR_KIT_BONUS;
     private int electronicWorkshopLevel = 2;
     private int woodWorkshopLevel = 2;
     private int mechanicalWorkshopLevel = 2;
     private int decorationWorkshopLevel = 1;
     private int textileWorkshopLevel = 0;
     private int currentSalePrice = 0;
-    private int maxInventorySize = 10;
-    private int maxSellingStockSize = 10;
+    private int maxInventorySize = GameBalance.STARTING_INVENTORY_CAPACITY;
+    private int maxSellingStockSize = GameBalance.STARTING_SELLING_CAPACITY;
     private int storageLevel = 1;
-    private int storageUpgradeCost = 120;
+    private int storageUpgradeCost = GameBalance.STORAGE_UPGRADE_COST;
     private int selectedEmployeeIndex = 0;
     private SaveManager saveManager = new SaveManager();
     private CustomerManager customerManager = new CustomerManager();
@@ -555,9 +558,9 @@ public class MainScreen implements Screen {
 
     private void buyRepairKit(){
         if (money >= 40) {
-                money -= 40;
-                dailyMoneySpent += 40;
-                repairBonus += 5;
+                money -= repairKitCost;
+                dailyMoneySpent += repairKitCost;
+                repairBonus += repairBonus;
                 message = "Vous avez acheté un kit de réparation. -5 energie sur les réparations d'aujourd'hui.";
             } else {
                 message = "Pas assez d'argent pour acheter un kit de réparation.";
@@ -906,13 +909,13 @@ public class MainScreen implements Screen {
     }
 
     private void recruitEmployee() {
-        if (money < EmployeeManager.RECRUITMENT_COST) {
+        if (money < GameBalance.EMPLOYEE_RECRUIT_COST) {
             message = "Pas assez d'argent pour recruter un employé.";
             return;
         }
 
-        money -= EmployeeManager.RECRUITMENT_COST;
-        dailyMoneySpent += EmployeeManager.RECRUITMENT_COST;
+        money -= GameBalance.EMPLOYEE_RECRUIT_COST;
+        dailyMoneySpent += GameBalance.EMPLOYEE_RECRUIT_COST;
         employees.add(employeeManager.createEmployee(employees.size() + 1));
         selectedEmployeeIndex = employees.size() - 1;
         message = "Nouvel employé recruté.";
@@ -923,14 +926,14 @@ public class MainScreen implements Screen {
             message = "Aucun employé à former.";
             return;
         }
-        if (money < EmployeeManager.TRAINING_COST) {
+        if (money < GameBalance.EMPLOYEE_TRAINING_COST) {
             message = "Pas assez d'argent pour former cet employé.";
             return;
         }
 
         selectedEmployeeIndex = Math.max(0, Math.min(selectedEmployeeIndex, employees.size() - 1));
-        money -= EmployeeManager.TRAINING_COST;
-        dailyMoneySpent += EmployeeManager.TRAINING_COST;
+        money -= GameBalance.EMPLOYEE_TRAINING_COST;
+        dailyMoneySpent += GameBalance.EMPLOYEE_TRAINING_COST;
         employeeManager.trainEmployee(employees.get(selectedEmployeeIndex));
         message = employees.get(selectedEmployeeIndex).name + " a été formé.";
     }

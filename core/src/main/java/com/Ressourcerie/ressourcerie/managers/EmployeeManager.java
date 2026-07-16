@@ -3,13 +3,12 @@ package com.Ressourcerie.ressourcerie.managers;
 import com.Ressourcerie.ressourcerie.employees.Employee;
 import com.Ressourcerie.ressourcerie.items.Item;
 
+import com.Ressourcerie.ressourcerie.config.GameBalance;
+
 import java.util.List;
 import java.util.Random;
 
 public class EmployeeManager {
-
-    public static final int RECRUITMENT_COST = 200;
-    public static final int TRAINING_COST = 100;
 
     private final Random random = new Random();
 
