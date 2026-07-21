@@ -5,6 +5,7 @@ import java.util.Random;
 
 import com.Ressourcerie.ressourcerie.items.Item;
 import com.Ressourcerie.ressourcerie.config.GameBalance;
+import com.Ressourcerie.ressourcerie.items.RepairResult;
 
 
 public class ItemManager {
@@ -136,5 +137,34 @@ public class ItemManager {
         }
 
         return Math.max(1, item.value);
+    }
+
+    public RepairResult repairItem(Item item, int availableEnergy, int totalBonus, int repairAmount){
+        RepairResult result = new RepairResult();
+        
+        if (item == null){
+            result.message = "Objet invalide.";
+            return result;
+        }
+
+        if (item.condition >= 100){
+            result.message = "Cet objet est déjà entièrement réparé.";
+            return result;
+        }
+
+        int repairCost = getFinalRepairCost(item, totalBonus);
+
+        if (availableEnergy < repairCost){
+            result.message = "Pas assez d'énergie.";
+            return result;
+        }
+
+        item.repair(repairAmount);
+
+        result.success = true;
+        result.energyCost = repairCost;
+        result.message = item.name + " réparé à " + item.condition + "%.";
+
+        return result;
     }
 }
