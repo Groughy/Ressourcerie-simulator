@@ -111,7 +111,7 @@ public class ItemManager {
     }
 
     public boolean isFullyRepaired(Item item) {
-        return item.condition >= 100;
+        return item != null && item.condition >= 100;
     }
 
     public boolean canBeSold(Item item, ArrayList<Item> sellingStock, int maxSellingStockSize, int salePrice){
@@ -128,5 +128,13 @@ public class ItemManager {
             return false;
         }
         return true;
+    }
+
+    public int getDefaultSalePrice(Item item){
+        if (item == null){
+            return 1;
+        }
+
+        return Math.max(1, item.value);
     }
 }

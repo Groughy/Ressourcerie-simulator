@@ -843,7 +843,7 @@ public class MainScreen implements Screen {
                 selectedIndex = 0;
             }
 
-            currentSalePrice = Inventory.get(selectedIndex).value;
+            currentSalePrice = itemManager.getDefaultSalePrice(Inventory.get(selectedIndex));
             showSaleMenu = true;
         }
     }
