@@ -427,11 +427,6 @@ public class MainScreen implements Screen {
         return 0;
     }
 
-    private int getRepairAmount(Item item) {
-        int workshopLevel = getWorkshopLevelForItem(item);
-        return GameBalance.BASE_REPAIR_AMOUNT + Math.max(0, workshopLevel - 1) * GameBalance.REPAIR_AMOUNT_PER_WORKSHOP_LEVEL;
-    }
-
     private int getCustomersPerDay() {
         if (reputation < GameBalance.BAD_REPUTATION_THRESHOLD) {
             return 1;
@@ -715,11 +710,14 @@ public class MainScreen implements Screen {
         Item selectedItem = Inventory.get(selectedIndex);
         
         if (!canRepair(selectedItem)){
+            message = "L'atelier correspondant n'est pas débloqué.";
             return;
         }
 
-        int totalBonus = repairBonus + (getWorkshopLevelForItem(selectedItem) -1);
-        int repairAmount = getRepairAmount(selectedItem);
+        int workshopLevel = getWorkshopLevelForItem(selectedItem);
+
+        int totalBonus = repairBonus + Math.max(0, workshopLevel -1);
+        int repairAmount = itemManager.getRepairAmount(selectedItem, workshopLevel);
 
         RepairResult result = itemManager.repairItem(selectedItem, energy, totalBonus, repairAmount);
 

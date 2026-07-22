@@ -159,4 +159,14 @@ public class ItemManager {
 
         return new RepairResult(true, repairCost, item.name + " réparé à " + item.condition +"%.");
     }
+
+    public int getRepairAmount(Item item, int workshopLevel){
+        if (item == null){
+            return 0;
+        }
+
+        int baseRepairAmount = GameBalance. BASE_REPAIR_AMOUNT;
+        int workshopBonus = (workshopLevel - 1) * GameBalance.REPAIR_AMOUNT_PER_WORKSHOP_LEVEL;
+        return baseRepairAmount + workshopBonus;
+    }
 }
