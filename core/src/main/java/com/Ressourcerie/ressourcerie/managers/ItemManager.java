@@ -140,31 +140,23 @@ public class ItemManager {
     }
 
     public RepairResult repairItem(Item item, int availableEnergy, int totalBonus, int repairAmount){
-        RepairResult result = new RepairResult();
         
         if (item == null){
-            result.message = "Objet invalide.";
-            return result;
+            return new RepairResult(false, 0, "Objet invalide.");
         }
 
         if (item.condition >= 100){
-            result.message = "Cet objet est déjà entièrement réparé.";
-            return result;
+            return new RepairResult(false, 0, "Objet déjà réparé.");
         }
 
         int repairCost = getFinalRepairCost(item, totalBonus);
 
         if (availableEnergy < repairCost){
-            result.message = "Pas assez d'énergie.";
-            return result;
+            return new RepairResult(false, 0, "Pas assez d'énergie.");
         }
 
         item.repair(repairAmount);
 
-        result.success = true;
-        result.energyCost = repairCost;
-        result.message = item.name + " réparé à " + item.condition + "%.";
-
-        return result;
+        return new RepairResult(true, repairCost, item.name + " réparé à " + item.condition +"%.");
     }
 }

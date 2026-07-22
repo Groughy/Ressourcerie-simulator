@@ -6,6 +6,7 @@ import java.util.Random;
 import com.Ressourcerie.ressourcerie.customer.Customer;
 import com.Ressourcerie.ressourcerie.employees.Employee;
 import com.Ressourcerie.ressourcerie.items.Item;
+import com.Ressourcerie.ressourcerie.items.RepairResult;
 
 import com.Ressourcerie.ressourcerie.managers.SaveManager;
 import com.Ressourcerie.ressourcerie.managers.CustomerManager;
@@ -711,34 +712,22 @@ public class MainScreen implements Screen {
 }
 
     private void repairItem(){
-        if (!Inventory.isEmpty()) {
+        Item selectedItem = Inventory.get(selectedIndex);
+        
+        if (!canRepair(selectedItem)){
+            return;
+        }
 
-                Item selectedItem = Inventory.get(selectedIndex);
-                if (!canRepair(selectedItem)) {
-                    message = "Améliore ton atelier pour faire ça. Atelier requis : " + selectedItem.type;
-                    return;
-                }
+        int totalBonus = repairBonus + (getWorkshopLevelForItem(selectedItem) -1);
+        int repairAmount = getRepairAmount(selectedItem);
 
-                if (itemManager.isFullyRepaired(selectedItem)) {
-                    message = "Cet objet est déjà entièrement réparé.";
-                    return;
-                }
+        RepairResult result = itemManager.repairItem(selectedItem, energy, totalBonus, repairAmount);
 
-                int workshopLevel = getWorkshopLevelForItem(selectedItem);
-                int totalBonus = repairBonus + Math.max(0, workshopLevel - 1);
-                
-                int repairCost = itemManager.getFinalRepairCost(selectedItem, totalBonus);
-                if (energy < repairCost) {
-                    message = "Pas assez d'énergie pour réparer cet objet.";
-                    return;
-                }
-                energy -= repairCost;
-                int repairAmount = getRepairAmount(selectedItem);
-                selectedItem.repair(repairAmount);
+        message = result.message;
 
-                message = selectedItem.name + " réparé de " + repairAmount + ". Condition actuelle : " + selectedItem.condition + "%.";
-
-            }
+        if (result.success){
+            energy -= result.energyCost;
+        }
     }
 
     private void handleInputs(){
