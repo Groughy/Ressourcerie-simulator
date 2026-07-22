@@ -1,9 +1,11 @@
 package com.Ressourcerie.ressourcerie.managers;
 
 import java.util.Random;
+import java.util.ArrayList;
 import com.Ressourcerie.ressourcerie.customer.Customer;
 import com.Ressourcerie.ressourcerie.items.Item;
 import com.Ressourcerie.ressourcerie.config.GameBalance;
+import com.Ressourcerie.ressourcerie.results.SaleResult;
 
 
 
@@ -81,4 +83,37 @@ public Customer createRandomCustomer() {
         return true;
     }
 
+    public SaleResult tryBuyItem(Customer customer, ArrayList<Item> sellingStock){
+        if (customer == null){
+            return new SaleResult (false, false, null, -1, "Aucun client disponible");
+        }
+
+        if (sellingStock == null || sellingStock.isEmpty()){
+            return new SaleResult (false, false, null, -1, "Aucun objet à vendre");
+        }
+
+        for (int i = 0; i < sellingStock.size(); i++){
+            Item item = sellingStock.get(i);
+
+            if (!customerWantsItem(customer, item)){
+                continue;
+            }
+
+            if (!customerCanPay(customer, item)){
+                return new SaleResult(false, true, item, i, customer.name + " n'a pas assez d'argent.");
+            }
+
+            if (isPriceTooHigh(item)){
+                return new SaleResult(false, true, item, i, customer.name + " trouve le prix trop élevé.");
+            }
+
+            if (!acceptsItem(customer, item)){
+                return new SaleResult(false, true, item, i, customer.name + " refuse d'acheter un objet en mauvais état.");
+            }
+
+            return new SaleResult(true, false, item, i, customer.name + " acheter " + item.name + ".");
+        }
+
+        return new SaleResult(false, false, null, -1, customer.name + " ne trouve aucun objet qui l'intéresse.");
+    }
 }
