@@ -5,7 +5,7 @@ import java.util.Random;
 
 import com.Ressourcerie.ressourcerie.items.Item;
 import com.Ressourcerie.ressourcerie.config.GameBalance;
-import com.Ressourcerie.ressourcerie.items.RepairResult;
+import com.Ressourcerie.ressourcerie.results.RepairResult;
 
 
 public class ItemManager {

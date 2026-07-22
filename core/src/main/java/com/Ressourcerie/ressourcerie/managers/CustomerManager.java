@@ -2,7 +2,7 @@ package com.Ressourcerie.ressourcerie.managers;
 
 import java.util.Random;
 import com.Ressourcerie.ressourcerie.customer.Customer;
-
+import com.Ressourcerie.ressourcerie.items.Item;
 import com.Ressourcerie.ressourcerie.config.GameBalance;
 
 
@@ -42,6 +42,43 @@ public Customer createRandomCustomer() {
             customerType = customerTypes[random.nextInt(customerTypes.length)];
         }
         return new Customer(name, budget, wantedItem, customerType);
+    }
+
+    public boolean customerWantsItem(Customer customer, Item item){
+        return item != null
+            && customer != null
+            && item.name != null
+            && item.name.equals(customer.wantedItems);
+    }
+
+    public boolean customerCanPay(Customer customer, Item item){
+        return item.salePrice <= customer.budget;
+    }
+
+    public boolean isPriceTooHigh(Item item){
+        return item.salePrice > item.value * GameBalance.MAX_ACCEPTABLE_PRICE_MULTIPLIER;
+    }
+
+    public boolean isGoodDeal(Item item){
+        return item.salePrice < item.value * GameBalance.GOOD_DEAL_PRICE_MULTIPLIER;
+    }
+
+    public Customer getOrCreateCustomer(Customer currentCustomer, int reputation){
+        this.reputation = reputation;
+        
+        if (currentCustomer == null){
+            return createRandomCustomer();
+        }
+
+        return currentCustomer;
+    }
+
+    public boolean acceptsItem(Customer customer, Item item){
+        if ("Exigeant".equals(customer.customerType) && item.condition < 70){
+            return false;
+        }
+
+        return true;
     }
 
 }

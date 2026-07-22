@@ -6,7 +6,8 @@ import java.util.Random;
 import com.Ressourcerie.ressourcerie.customer.Customer;
 import com.Ressourcerie.ressourcerie.employees.Employee;
 import com.Ressourcerie.ressourcerie.items.Item;
-import com.Ressourcerie.ressourcerie.items.RepairResult;
+
+import com.Ressourcerie.ressourcerie.results.RepairResult;
 
 import com.Ressourcerie.ressourcerie.managers.SaveManager;
 import com.Ressourcerie.ressourcerie.managers.CustomerManager;
@@ -272,49 +273,26 @@ public class MainScreen implements Screen {
         saveGame();
     }
 
-    private boolean customerWantsItem(Item item){
-        return item != null
-            && currentCustomer != null
-            && item.name != null
-            && item.name.equals(currentCustomer.wantedItems);
-    }
-
-    private boolean customerCanPay(Item item){
-        return item.salePrice <= currentCustomer.budget;
-    }
-
-    private boolean isPriceTooHigh(Item item){
-        return item.salePrice > item.value * GameBalance.MAX_ACCEPTABLE_PRICE_MULTIPLIER;
-    }
-
-    private boolean isGoodDeal(Item item){
-        return item.salePrice < item.value * GameBalance.GOOD_DEAL_PRICE_MULTIPLIER;
-    }
-
-
     private void BuyFromCustomer() {
-        if (currentCustomer == null) {
-            customerManager.reputation = reputation;
-            currentCustomer = customerManager.createRandomCustomer();
-        }
+        currentCustomer = customerManager.getOrCreateCustomer(currentCustomer, reputation);
 
         for (int i = 0; i < sellingStock.size(); i++) {
             Item item = sellingStock.get(i);
 
-            if (!customerWantsItem(item)) {
+            if (!customerManager.customerWantsItem(currentCustomer, item)) {
                 continue;
             }
-            if (!customerCanPay(item)) {
+            if (!customerManager.customerCanPay(currentCustomer, item)) {
                 dailySalesRefused++;
                 message = currentCustomer.name + " n'a pas assez d'argent.";
                 return;
             }
-            if (isPriceTooHigh(item)) {
+            if (customerManager.isPriceTooHigh(item)) {
                 dailySalesRefused++;
                 message = currentCustomer.name + " trouve le prix trop élevé.";
                 return;
             }
-            if ("Exigeant".equals(currentCustomer.customerType) && item.condition < 70) {
+            if (!customerManager.acceptsItem(currentCustomer, item)) {
                 dailySalesRefused++;
                 message = currentCustomer.name + " refuse d'acheter un objet en mauvais état.";
                 return;
@@ -332,7 +310,7 @@ public class MainScreen implements Screen {
         money += item.salePrice;
         dailyMoneyEarned += item.salePrice;
         dailyItemsSold++;
-        if (isGoodDeal(item)){
+        if (customerManager.isGoodDeal(item)){
             reputation++;
             dailyReputationChange++;
         }
