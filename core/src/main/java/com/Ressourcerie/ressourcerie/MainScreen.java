@@ -8,6 +8,7 @@ import com.Ressourcerie.ressourcerie.employees.Employee;
 import com.Ressourcerie.ressourcerie.items.Item;
 
 import com.Ressourcerie.ressourcerie.results.RepairResult;
+import com.Ressourcerie.ressourcerie.results.SaleResult;
 
 import com.Ressourcerie.ressourcerie.managers.SaveManager;
 import com.Ressourcerie.ressourcerie.managers.CustomerManager;
@@ -276,34 +277,20 @@ public class MainScreen implements Screen {
     private void BuyFromCustomer() {
         currentCustomer = customerManager.getOrCreateCustomer(currentCustomer, reputation);
 
-        for (int i = 0; i < sellingStock.size(); i++) {
-            Item item = sellingStock.get(i);
+        SaleResult result = customerManager.tryBuyItem(currentCustomer, sellingStock);
 
-            if (!customerManager.customerWantsItem(currentCustomer, item)) {
-                continue;
-            }
-            if (!customerManager.customerCanPay(currentCustomer, item)) {
-                dailySalesRefused++;
-                message = currentCustomer.name + " n'a pas assez d'argent.";
-                return;
-            }
-            if (customerManager.isPriceTooHigh(item)) {
-                dailySalesRefused++;
-                message = currentCustomer.name + " trouve le prix trop élevé.";
-                return;
-            }
-            if (!customerManager.acceptsItem(currentCustomer, item)) {
-                dailySalesRefused++;
-                message = currentCustomer.name + " refuse d'acheter un objet en mauvais état.";
-                return;
-            }
+        message = result.message;
 
-            sellItemToCustomer(item, i);
+        if (result.refused){
+            dailySalesRefused++;
             return;
         }
 
-        dailySalesRefused++;
-        message = currentCustomer.name + " n'a rien trouvé d'intéressant.";
+        if (!result.success){
+            return;
+        }
+
+            sellItemToCustomer(result.soldItem, result.soldIndex);
     }
 
     private void sellItemToCustomer(Item item, int index){
@@ -314,17 +301,14 @@ public class MainScreen implements Screen {
             reputation++;
             dailyReputationChange++;
         }
-        if ("Collectionneur".equals(currentCustomer.customerType)
-                && ("Rare".equals(item.rarety)
-                || "Épique".equals(item.rarety)
-                || "Légendaire".equals(item.rarety))) {
+        if (customerManager.givesCollectorBonus(currentCustomer, item)) {
             money += GameBalance.COLLECTOR_BONUS;
             dailyMoneyEarned += GameBalance.COLLECTOR_BONUS;
         }
 
         applyCustomerSatisfaction(item);
 
-        sellingStock.remove(index);
+        customerManager.removeSoldItem(sellingStock, index);
 
         message = currentCustomer.name + " a acheté " + item.name + " pour " + item.salePrice + " euros.";
     }

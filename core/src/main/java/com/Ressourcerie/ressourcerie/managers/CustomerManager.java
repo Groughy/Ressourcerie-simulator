@@ -6,6 +6,7 @@ import com.Ressourcerie.ressourcerie.customer.Customer;
 import com.Ressourcerie.ressourcerie.items.Item;
 import com.Ressourcerie.ressourcerie.config.GameBalance;
 import com.Ressourcerie.ressourcerie.results.SaleResult;
+import com.Ressourcerie.ressourcerie.results.SatisfactionResult;
 
 
 
@@ -115,5 +116,31 @@ public Customer createRandomCustomer() {
         }
 
         return new SaleResult(false, false, null, -1, customer.name + " ne trouve aucun objet qui l'intéresse.");
+    }
+
+    public boolean givesCollectorBonus(Customer customer, Item item){
+        return "Collectionneur".equals(customer.customerType) && ("Rare".equals(item.rarety) 
+            || "Épique".equals(item.rarety)
+            || "Légendaire".equals(item.rarety));
+    }
+
+    public void removeSoldItem(ArrayList<Item> sellingStock, int index){
+        sellingStock.remove(index);
+    }
+
+    public SatisfactionResult evaluateCustomerSatisfaction(Item item){
+        if (item == null){
+            return new SatisfactionResult(0, 0, 0, 0);
+        }
+
+        if (item.condition >= 70){
+            return new SatisfactionResult(GameBalance.HAPPY_REPUTATION_GAIN, 0, 1, 0);
+        }
+
+        if (item.condition >= 40){
+            return new SatisfactionResult(0, 0, 1, 0);
+        }
+
+        return new SatisfactionResult(-GameBalance.UNHAPPY_REPUTATION_LOSS, 0, 0, 1);
     }
 }
